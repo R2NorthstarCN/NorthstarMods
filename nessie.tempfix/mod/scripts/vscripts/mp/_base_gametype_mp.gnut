@@ -29,7 +29,7 @@ struct {
 	entity intermissionCamera
 	array<entity> specCams
 	// modified
-	bool forcedRespawn = false
+	bool forcedRespawn = true
 } file
 
 void function BaseGametype_Init_MPSP()
