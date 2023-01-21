@@ -26,6 +26,8 @@ void function CaptureTheFlag_Init()
 {
 	PrecacheModel( CTF_FLAG_MODEL )
 	PrecacheModel( CTF_FLAG_BASE_MODEL )
+	PrecacheParticleSystem( FLAG_FX_FRIENDLY )
+	PrecacheParticleSystem( FLAG_FX_ENEMY )
 	
 	CaptureTheFlagShared_Init()
 	SetSwitchSidesBased( true )
@@ -124,15 +126,19 @@ void function OnPlayerKilled( entity victim, entity attacker, var damageInfo )
 void function CreateFlags()
 {	
 	if ( IsValid( file.imcFlagSpawn ) )
-	{
 		file.imcFlagSpawn.Destroy()
+	if( IsValid( file.imcFlag ) )
 		file.imcFlag.Destroy()
+	if( IsValid( file.imcFlagReturnTrigger ) )
 		file.imcFlagReturnTrigger.Destroy()
 		
+	if( IsValid( file.militiaFlagSpawn ) )
 		file.militiaFlagSpawn.Destroy()
+	if( IsValid( file.militiaFlag ) )
 		file.militiaFlag.Destroy()
+	if( IsValid( file.militiaFlagReturnTrigger ) )
 		file.militiaFlagReturnTrigger.Destroy()
-	}
+	
 
 	foreach ( entity spawn in GetEntArrayByClass_Expensive( "info_spawnpoint_flag" ) )
 	{
@@ -164,6 +170,9 @@ void function CreateFlags()
 		flag.SetValueForModelKey( CTF_FLAG_MODEL )
 		SetTeam( flag, flagTeam )
 		flag.MarkAsNonMovingAttachment()
+		flag.Minimap_AlwaysShow( TEAM_IMC, null ) // show flag icon on minimap
+		flag.Minimap_AlwaysShow( TEAM_MILITIA, null )
+		flag.Minimap_SetAlignUpright( true )
 		DispatchSpawn( flag )
 		flag.SetModel( CTF_FLAG_MODEL )
 		flag.SetOrigin( spawn.GetOrigin() + < 0, 0, base.GetBoundingMaxs().z * 2 > ) // ensure flag doesn't spawn clipped into geometry
@@ -219,17 +228,18 @@ void function RemoveFlags()
 {
 	// destroy all the flag related things
 	if ( IsValid( file.imcFlagSpawn ) )
-	{
 		file.imcFlagSpawn.Destroy()
+	if( IsValid( file.imcFlag ) )
 		file.imcFlag.Destroy()
+	if( IsValid( file.imcFlagReturnTrigger ) )
 		file.imcFlagReturnTrigger.Destroy()
-	}
-	if ( IsValid( file.militiaFlagSpawn ) )
-	{
+		
+	if( IsValid( file.militiaFlagSpawn ) )
 		file.militiaFlagSpawn.Destroy()
+	if( IsValid( file.militiaFlag ) )
 		file.militiaFlag.Destroy()
+	if( IsValid( file.militiaFlagReturnTrigger ) )
 		file.militiaFlagReturnTrigger.Destroy()
-	}
 
 	// unsure if this is needed, since the flags are destroyed? idk
 	SetFlagStateForTeam( TEAM_MILITIA, eFlagState.None )
@@ -241,6 +251,7 @@ void function TrackFlagReturnTrigger( entity flag, entity returnTrigger )
 	// this is a bit of a hack, it seems parenting the return trigger to the flag actually sets the pickup radius of the flag to be the same as the trigger
 	// this isn't wanted since only pickups should use that additional radius
 	flag.EndSignal( "OnDestroy" )
+	returnTrigger.EndSignal( "OnDestroy" )
 		
 	while ( true )
 	{
@@ -291,7 +302,7 @@ void function GiveFlag( entity player, entity flag )
 	PlayFactionDialogueToTeamExceptPlayer( "ctf_flagPickupFriendly", player.GetTeam(), player )
 	
 	MessageToTeam( flag.GetTeam(), eEventNotifications.PlayerHasFriendlyFlag, player, player )
-	EmitSoundOnEntityToTeam( flag, "UI_CTF_EnemyGrabFlag", flag.GetTeam() )
+	EmitSoundOnEntityToTeam( flag, "UI_CTF_3P_EnemyGrabFlag", flag.GetTeam() )
 	
 	SetFlagStateForTeam( flag.GetTeam(), eFlagState.Away ) // used for held
 }
@@ -339,14 +350,13 @@ void function DropFlag( entity player, bool realDrop = true )
 			file.imcCaptureAssistList.append( player )
 		else
 			file.militiaCaptureAssistList.append( player )
-	
+
 		// do notifications
 		MessageToPlayer( player, eEventNotifications.YouDroppedTheEnemyFlag )
 		EmitSoundOnEntityOnlyToPlayer( player, player, "UI_CTF_1P_FlagDrop" )
-		
+
 		MessageToTeam( player.GetTeam(), eEventNotifications.PlayerDroppedEnemyFlag, player, player )
 		// todo need a sound here maybe
-		
 		MessageToTeam( GetOtherTeam( player.GetTeam() ), eEventNotifications.PlayerDroppedFriendlyFlag, player, player )
 		// todo need a sound here maybe
 	}
@@ -421,7 +431,7 @@ void function CaptureFlag( entity player, entity flag )
 			AddPlayerScore( assistPlayer, "FlagCaptureAssist", player )
 		
 	assistList.clear()
-	
+
 	// notifs
 	MessageToPlayer( player, eEventNotifications.YouCapturedTheEnemyFlag )
 	EmitSoundOnEntityOnlyToPlayer( player, player, "UI_CTF_1P_PlayerScore" )
@@ -430,7 +440,7 @@ void function CaptureFlag( entity player, entity flag )
 	EmitSoundOnEntityToTeamExceptPlayer( flag, "UI_CTF_3P_TeamScore", player.GetTeam(), player )
 	
 	MessageToTeam( GetOtherTeam( team ), eEventNotifications.PlayerCapturedFriendlyFlag, player, player )
-	EmitSoundOnEntityToTeam( flag, "UI_CTF_3P_EnemyScore", flag.GetTeam() )
+	EmitSoundOnEntityToTeam( flag, "UI_CTF_3P_EnemyScores", flag.GetTeam() )
 	
 	if ( GameRules_GetTeamScore( team ) == GameMode_GetRoundScoreLimit( GAMETYPE ) - 1 )
 	{
@@ -446,6 +456,12 @@ void function OnPlayerEntersFlagReturnTrigger( entity trigger, entity player )
 		flag = file.imcFlag
 	else
 		flag = file.militiaFlag
+
+	if( !IsValid( flag ) )
+		return
+	
+	if( !IsValid( player ) )
+		return
 	
 	if ( !player.IsPlayer() || player.IsTitan() || player.GetTeam() != flag.GetTeam() || IsFlagHome( flag ) || flag.GetParent() != null )
 		return
@@ -455,11 +471,15 @@ void function OnPlayerEntersFlagReturnTrigger( entity trigger, entity player )
 
 void function OnPlayerExitsFlagReturnTrigger( entity trigger, entity player )
 {
+	StopSoundOnEntity( player, "UI_CTF_1P_FlagReturnMeter" ) // always do this...
+	
 	entity flag
 	if ( trigger.GetTeam() == TEAM_IMC )
 		flag = file.imcFlag
 	else
 		flag = file.militiaFlag
+	if( !IsValid( flag ) ) // defensive fix
+		return
 		
 	if ( !player.IsPlayer() || player.IsTitan() || player.GetTeam() != flag.GetTeam() || IsFlagHome( flag ) || flag.GetParent() != null )
 		return
@@ -481,14 +501,16 @@ void function TryReturnFlag( entity player, entity flag )
 	})
 	
 	player.EndSignal( "FlagReturnEnded" )
+	flag.EndSignal( "FlagReturnEnded" ) // avoid multiple players to return one flag at once
 	player.EndSignal( "OnDeath" )
+	player.EndSignal( "OnDestroy" ) // defensive fix
 	
 	wait CTF_GetFlagReturnTime()
 	
 	// flag return succeeded
 	// return flag
 	ResetFlag( flag )
-	
+
 	// do notifications for return
 	MessageToPlayer( player, eEventNotifications.YouReturnedFriendlyFlag )
 	AddPlayerScore( player, "FlagReturn", player )
@@ -501,4 +523,6 @@ void function TryReturnFlag( entity player, entity flag )
 	MessageToTeam( GetOtherTeam( flag.GetTeam() ), eEventNotifications.PlayerReturnedEnemyFlag, null, player )
 	EmitSoundOnEntityToTeam( flag, "UI_CTF_3P_EnemyReturnsFlag", GetOtherTeam( flag.GetTeam() ) )
 	PlayFactionDialogueToTeam( "ctf_flagReturnedEnemy", GetOtherTeam( flag.GetTeam() ) )
+
+	flag.Signal( "FlagReturnEnded" )
 }
