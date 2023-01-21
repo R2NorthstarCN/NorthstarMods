@@ -17,8 +17,6 @@ void function GamemodeLts_Init()
 	SetSwitchSidesBased( true )
 	SetRoundBased( true )
 	SetRespawnsEnabled( false )
-	SetShouldPlayDefaultMusic( false )
-	EarnMeterMP_SetPassiveGainProgessEnable( false )
 	Riff_ForceSetEliminationMode( eEliminationMode.PilotsTitans )
 	Riff_ForceSetSpawnAsTitan( eSpawnAsTitan.Always )
 	SetShouldUseRoundWinningKillReplay( true )
@@ -29,10 +27,8 @@ void function GamemodeLts_Init()
 
 	AddCallback_OnPilotBecomesTitan( RefreshThirtySecondWallhackHighlight )
 	AddCallback_OnTitanBecomesPilot( RefreshThirtySecondWallhackHighlight )
-	AddCallback_OnPlayerKilled( OnPlayerKilled )
 	
 	SetTimeoutWinnerDecisionFunc( CheckTitanHealthForDraw )
-	SetTimeoutWinnerDecisionReason( "#GAMEMODE_TITAN_DAMAGE_ADVANTAGE", "#GAMEMODE_TITAN_DAMAGE_DISADVANTAGE" )
 	TrackTitanDamageInPlayerGameStat( PGS_ASSAULT_SCORE )
 	
 	ClassicMP_SetCustomIntro( ClassicMP_DefaultNoIntro_Setup, ClassicMP_DefaultNoIntro_GetLength() )
@@ -53,40 +49,15 @@ void function WaitForThirtySecondsLeftThreaded()
 	
 	// wait until 30sec left 
 	wait ( endTime - 30 ) - Time()
-	//PlayMusicToAll( eMusicPieceID.LEVEL_LAST_MINUTE )
-	//try using this?
-	CreateTeamMusicEvent( TEAM_IMC, eMusicPieceID.LEVEL_LAST_MINUTE, Time() )
-	CreateTeamMusicEvent( TEAM_MILITIA, eMusicPieceID.LEVEL_LAST_MINUTE, Time() )
-	foreach( entity player in GetPlayerArray() )
-		PlayCurrentTeamMusicEventsOnPlayer( player )
+	PlayMusicToAll( eMusicPieceID.LEVEL_LAST_MINUTE )
 	
 	foreach ( entity player in GetPlayerArray() )
 	{	
 		// warn there's 30 seconds left
 		Remote_CallFunction_NonReplay( player, "ServerCallback_LTSThirtySecondWarning" )
-
+		
 		// do initial highlight
-		//RefreshThirtySecondWallhackHighlight( player, null )
-	}
-	thread ThirtySecondWallhackHighlightThink()
-}
-
-void function ThirtySecondWallhackHighlightThink()
-{
-	svGlobal.levelEnt.EndSignal( "GameStateChanged" )
-
-	while( true )
-	{
-		foreach( entity player in GetPlayerArray() )
-		{
-			if( !IsAlive( player ) )
-				continue
-			if( player.IsTitan() )
-				Highlight_SetEnemyHighlight( player, "enemy_sonar" )
-			else if( IsValid( player.GetPetTitan() ) )
-				Highlight_SetEnemyHighlight( player.GetPetTitan(), "enemy_sonar" )
-		}
-		WaitFrame()
+		RefreshThirtySecondWallhackHighlight( player, null )
 	}
 }
 
@@ -99,26 +70,6 @@ void function RefreshThirtySecondWallhackHighlight( entity player, entity titan 
 		
 	if ( player.GetPetTitan() != null )
 		Highlight_SetEnemyHighlight( player.GetPetTitan(), "enemy_sonar" )
-}
-
-void function OnPlayerKilled( entity victim, entity attacker, var damageInfo )
-{
-	array<entity> allies = GetPlayerArrayOfTeam_Alive( victim.GetTeam() )
-	int teamTitanCount
-	entity latestCheckedPlayer
-	foreach( entity player in allies )
-	{
-		if( PlayerHasTitan( player ) )
-		{
-			teamTitanCount += 1
-			latestCheckedPlayer = player
-		}
-	}
-	if( teamTitanCount == 1 )
-	{
-		if( IsValid( latestCheckedPlayer ) )
-			PlayFactionDialogueToPlayer( "lts_playerLastTitanOnTeam", latestCheckedPlayer )
-	}
 }
 
 int function CheckTitanHealthForDraw()

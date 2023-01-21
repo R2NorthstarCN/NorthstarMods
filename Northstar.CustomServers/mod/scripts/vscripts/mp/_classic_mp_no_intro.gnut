@@ -34,9 +34,7 @@ void function ClassicMP_DefaultNoIntro_Start()
 		wait TITAN_DROP_SPAWN_INTRO_REAL_LENGTH
 	else
 	{
-		//wait NOINTRO_INTRO_PILOT_LENGTH
-		// good to use this
-		wait ClassicMP_GetIntroLength()
+		wait NOINTRO_INTRO_PILOT_LENGTH
 		
 		foreach ( entity player in GetPlayerArray() )
 		{
@@ -46,10 +44,7 @@ void function ClassicMP_DefaultNoIntro_Start()
 				RemoveCinematicFlag( player, CE_FLAG_CLASSIC_MP_SPAWNING )
 			}
 			
-			if( GetRoundsPlayed() < 1 && !HasSwitchedSides() )
-				TryGameModeAnnouncement( player )
-			else
-				TryGameModeAnnouncement( player, false )
+			TryGameModeAnnouncement( player )
 		}
 	}
 	
@@ -83,7 +78,7 @@ void function ClassicMP_DefaultNoIntro_PilotSpawnPlayer( entity player )
 	RespawnAsPilot( player )
 	player.FreezeControlsOnServer()
 	AddCinematicFlag( player, CE_FLAG_CLASSIC_MP_SPAWNING )
-	ScreenFadeFromBlack( player, 3.0, 1.0 )
+	ScreenFadeFromBlack( player, 0.5, 0.5 )
 }
 
 // spawn as titan for intro
@@ -91,8 +86,5 @@ void function ClassicMP_DefaultNoIntro_TitanSpawnPlayer( entity player )
 {
 	// blocking call
 	RespawnAsTitan( player, false )
-	if( GetRoundsPlayed() < 1 && !HasSwitchedSides() )
-		TryGameModeAnnouncement( player )
-	else
-		TryGameModeAnnouncement( player, false )
+	TryGameModeAnnouncement( player )
 }

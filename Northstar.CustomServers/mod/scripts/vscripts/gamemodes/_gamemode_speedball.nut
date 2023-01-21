@@ -1,7 +1,5 @@
 global function GamemodeSpeedball_Init
 
-const NOINTRO_INTRO_SPEEDBALL_LENGTH = 6.0 // vanilla behaves like this
-
 struct {
 	entity flagBase
 	entity flag
@@ -17,8 +15,6 @@ void function GamemodeSpeedball_Init()
 	SetRoundBased( true )
 	SetRespawnsEnabled( false )
 	SetShouldUseRoundWinningKillReplay( true )
-	SetShouldPlayDefaultMusic( false )
-	EarnMeterMP_SetPassiveGainProgessEnable( false )
 	Riff_ForceTitanAvailability( eTitanAvailability.Never )
 	Riff_ForceSetEliminationMode( eEliminationMode.Pilots )
 	ScoreEvent_SetupEarnMeterValuesForMixedModes()
@@ -31,10 +27,9 @@ void function GamemodeSpeedball_Init()
 	AddCallback_OnTouchHealthKit( "item_flag", OnFlagCollected )
 	AddCallback_OnPlayerKilled( OnPlayerKilled )
 	SetTimeoutWinnerDecisionFunc( TimeoutCheckFlagHolder )
-	SetTimeoutWinnerDecisionReason( "#GAMEMODE_SPEEDBALL_WIN_TIME_FLAG_LAST", "#GAMEMODE_SPEEDBALL_LOSS_TIME_FLAG_LAST" )
-	AddCallback_OnRoundEndCleanup( ResetFlag )
+	AddCallback_OnRoundEndCleanup ( ResetFlag )
 
-	ClassicMP_SetCustomIntro( ClassicMP_DefaultNoIntro_Setup, NOINTRO_INTRO_SPEEDBALL_LENGTH )
+	ClassicMP_SetCustomIntro( ClassicMP_DefaultNoIntro_Setup, ClassicMP_DefaultNoIntro_GetLength() )
 	ClassicMP_ForceDisableEpilogue( true )
 }
 

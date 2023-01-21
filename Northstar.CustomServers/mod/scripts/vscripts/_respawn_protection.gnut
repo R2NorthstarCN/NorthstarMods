@@ -1,7 +1,6 @@
 global function RespawnProtection_Init
 
 void function RespawnProtection_Init(){
-	RegisterSignal( "RespawnProtectionEnd" )
 	AddCallback_OnPlayerRespawned( OnPlayerRespawned )
 }
 
@@ -10,17 +9,14 @@ void function OnPlayerRespawned( entity player )
 	thread RespawnProtection(player,GetCurrentPlaylistVarFloat("respawnprotection",0.0))
 }
 
-void function RespawnProtection( entity player , float duration ){
+void function RespawnProtection( entity player , float time ){
 	OnThreadEnd(
 		function() : ( player )
 		{
-			if( IsValid( player ) )
+			//cancel protect if player attack
+			if( IsDemigod( player ) )
 			{
-				player.Signal( "RespawnProtectionEnd" )
-				SetDefaultMPEnemyHighlight( player )
-				//cancel protect if player attack
-				if( IsDemigod( player ) )
-					DisableDemigod( player );
+				DisableDemigod( player );
 			}
 		}
 	)
@@ -36,22 +32,8 @@ void function RespawnProtection( entity player , float duration ){
 	else{
 		//start protect
 		EnableDemigod( player )
-		//start a highlight
-		waitthread ProectionHighlightThink( player, duration )
-	}
-}
-
-void function ProectionHighlightThink( entity player, float duration )
-{
-	player.EndSignal( "OnDeath" )
-	player.EndSignal( "OnDestroy" )
-	player.EndSignal( "RespawnProtectionEnd" )
-
-	float startTime = Time()
-	while( Time() - startTime <= duration )
-	{
-		Highlight_SetEnemyHighlight( player, "sp_enemy_pilot" )
-		player.Highlight_SetParam( 2, 0, < 255,215,0 > )
-		WaitFrame()
+		wait time
+		//cancel protect
+		DisableDemigod( player );
 	}
 }

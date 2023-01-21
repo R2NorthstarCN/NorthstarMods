@@ -33,7 +33,6 @@ global function SetReplacementTitanGamemodeRules
 global function SetRequestTitanGamemodeRules
 
 global function CreateTitanForPlayerAndHotdrop
-global function SetRequestTitanAllowedCallback
 
 struct {
 	array<int> ETATimeThresholds = [ 120, 60, 30, 15 ]
@@ -53,8 +52,6 @@ struct {
 
 	bool functionref( entity ) ReplacementTitanGamemodeRules
 	bool functionref( entity, vector ) RequestTitanGamemodeRules
-
-	bool functionref( entity player, array< string > args ) RequestTitanAllowedCallback
 
 } file
 
@@ -90,10 +87,6 @@ function ReplacementTitans_Init()
 	FlagInit( "LevelHasRoof" )
 }
 
-void function SetRequestTitanAllowedCallback( bool functionref( entity player, array<string> args ) RequestTitanAllowedCallback )
-{
-	file.RequestTitanAllowedCallback = RequestTitanAllowedCallback
-}
 
 void function ReplacementTitan_InitPlayer( entity player )
 {
@@ -431,7 +424,6 @@ function TryETATitanReadyAnnouncement( entity player )
 		TryReplacementTitanReadyAnnouncement( player )
 		return
 	}
-	
 
 	//This entire loop is probably too complicated now for what it's doing. Simplify next game!
 	//Loop might be pretty hard to read, a particular iteration of the loop is written in comments below
@@ -532,9 +524,6 @@ function req()
 
 bool function ClientCommand_RequestTitan( entity player, array<string> args )
 {
-	if( file.RequestTitanAllowedCallback != null && !file.RequestTitanAllowedCallback( player, args ) )
-		return true
-		
 	ReplacementTitan( player ) //Separate function because other functions will call ReplacementTitan
 	return true
 }
@@ -888,20 +877,6 @@ void function CreateTitanForPlayerAndHotdrop( entity player, Point spawnPoint, T
 	player.Signal( "titan_impact" )
 
 	thread TitanNPC_WaitForBubbleShield_StartAutoTitanBehavior( titan )
-	thread PlayerEarnMeter_ReplacementTitanThink( player, titan )
-}
-
-void function PlayerEarnMeter_ReplacementTitanThink( entity player, entity titan )
-{
-	player.EndSignal( "OnDestroy" )
-	OnThreadEnd(
-		function(): ( player )
-		{
-			if( IsValid( player ) )
-				PlayerEarnMeter_Reset( player )
-		}
-	)
-	titan.WaitSignal( "OnDestroy" )
 }
 
 void function CleanupTitanFallDisablingEntity( entity titanFallDisablingEntity, entity titan )
