@@ -148,15 +148,19 @@ void function SpawnPlayerIntoDropship( entity player )
 	if ( IsAlive( player ) )
 		player.Die() // kill them so we don't have any issues respawning them later
 	
-	player.s.dropshipIntroIsJumping <- false
-	OnThreadEnd( function() : ( player )
+	table results = {}
+	results.isJumping <- false
+
+	OnThreadEnd( function() : ( player, results )
 	{	
 		if ( IsValid( player ) )
 		{
 			player.ClearParent()
 			ClearPlayerAnimViewEntity( player )
+			if ( !IsAlive( player ) )
+				player.Anim_Stop() // stop sequence for dead players
 			
-			if ( !player.s.dropshipIntroIsJumping )
+			if ( !results.isJumping )
 			{
 				player.MovementEnable()
 				player.EnableWeaponViewModel()
@@ -165,7 +169,7 @@ void function SpawnPlayerIntoDropship( entity player )
 		}
 	})
 	
-	//WaitFrame() // don't know why WaitFrame() here
+	WaitFrame() // do a waitFrame() for other resspawn functions set up
 
 	player.EndSignal( "OnDeath" )
 	
@@ -179,7 +183,9 @@ void function SpawnPlayerIntoDropship( entity player )
 	IntroDropship playerDropship
 	int playerDropshipIndex = -1
 	foreach ( IntroDropship dropship in teamDropships )
+	{
 		for ( int i = 0; i < dropship.players.len(); i++ )
+		{
 			if ( dropship.players[ i ] == null )
 			{
 				playerDropship = dropship
@@ -188,8 +194,10 @@ void function SpawnPlayerIntoDropship( entity player )
 				dropship.players[ i ] = player
 				break
 			}
+		}
+	}
 					
-	if ( playerDropship.dropship == null )
+	if ( playerDropship.dropship == null ) // can't find a valid dropship!
 	{
 		// if we're at this point, we have more players than we do dropships, so just pick a random one
 		playerDropship = teamDropships.getrandom()
@@ -233,7 +241,7 @@ void function SpawnPlayerIntoDropship( entity player )
 	PlayBattleChatterLine( player, "bc_pIntroChat" )
 	WaittillAnimDone( player ) // somehow this is better than just waiting for the blocking FirstPersonSequence call?
 	
-	player.s.dropshipIntroIsJumping <- true
+	results.isJumping = true
 	thread PlayerJumpsFromDropship( player )
 }
 
@@ -242,27 +250,28 @@ void function PlayerJumpsFromDropship( entity player )
 	player.EndSignal( "OnDeath" )
 	player.EndSignal( "OnDestroy" )
 
-	OnThreadEnd( function() : ( player )
+	int moveLockEffect = StatusEffect_AddEndless( player, eStatusEffect.move_slow, 1.0 ) // 1.0 will lock player's movement
+
+	OnThreadEnd( function() : ( player, moveLockEffect )
 	{
 		if ( IsValid( player ) )
 		{
-			// show weapon viewmodel and hud and let them move again
-			player.MovementEnable()
+			// defensive fix, restore movements
+			StatusEffect_Stop( player, moveLockEffect )
+			// show weapon viewmodel and hud
 			player.EnableWeaponViewModel()
 			DeployAndEnableWeapons(player)
 			RemoveCinematicFlag( player, CE_FLAG_CLASSIC_MP_SPAWNING )
-
-			EnablePlayerDoubleJump( player ) // restore doublejumps
 		}
 	})
 		
 	// wait for intro timer to be fully done
 	wait ( file.introStartTime + DROPSHIP_INTRO_LENGTH ) - Time()
-	player.MovementDisable() // disable all movement but let them look around still
-	
+
 	// wait for player to hit the ground
 	wait 0.1 // assume players will never actually hit ground before this
-	DisablePlayerDoubleJump( player ) // this will make players never trigger jetpack dryfire sounds!
+	player.ConsumeDoubleJump() // disable double jump
+
 	while ( !player.IsOnGround() && !player.IsWallRunning() && !player.IsWallHanging() ) // todo this needs tweaking
 		WaitFrame()
 
@@ -270,54 +279,4 @@ void function PlayerJumpsFromDropship( entity player )
 		TryGameModeAnnouncement( player )
 	else
 		TryGameModeAnnouncement( player, false )
-}
-
-// following functions triggers OnPlayerClassChange()
-void function DisablePlayerDoubleJump( entity player )
-{
-    string setFile = player.GetPlayerSettings()
-    array<string> setFileMods =  player.GetPlayerSettingsMods()
-	player.s.doubleJumpIsDisabled <- false
-	if ( setFileMods.contains( "disable_doublejump" ) ) // double jump has already been disabled through modified modes?
-	{
-		player.s.doubleJumpIsDisabled = true
-		return // just return
-	}
-
-    setFileMods.append( "disable_doublejump" ) // this will make players never trigger jetpack dryfire sounds!
-    asset modelName = player.GetModelName() // they maybe reset model
-    int skinIndex = player.GetSkin()
-    int camoIndex = player.GetCamo()
-
-    player.SetPlayerSettingsWithMods( player.GetPlayerSettings(), setFileMods )
-    // restore model, skin, etc.
-    player.SetModel( modelName )
-    player.SetSkin( skinIndex )
-    player.SetCamo( camoIndex )
-}
-
-void function EnablePlayerDoubleJump( entity player )
-{
-	if ( "doubleJumpIsDisabled" in player.s )
-	{
-		if ( player.s.doubleJumpIsDisabled ) // double jump has already been disabled through modified modes?
-			return // just return, don't re-enable
-	}
-
-    string setFile = player.GetPlayerSettings()
-    array<string> setFileMods =  player.GetPlayerSettingsMods()
-    if ( setFileMods.contains( "disable_doublejump" ) )
-        setFileMods.removebyvalue( "disable_doublejump" )
-    else // don't even have a disabled doublejump, just return
-        return
-
-    asset modelName = player.GetModelName() // they maybe reset model
-    int skinIndex = player.GetSkin()
-    int camoIndex = player.GetCamo()
-
-    player.SetPlayerSettingsWithMods( player.GetPlayerSettings(), setFileMods )
-    // restore model, skin, etc.
-    player.SetModel( modelName )
-    player.SetSkin( skinIndex )
-    player.SetCamo( camoIndex )
 }
