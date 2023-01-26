@@ -328,9 +328,9 @@ void function Evac( int evacTeam, float initialWait, float arrivalTime, float wa
 
 	// setup evac trigger
 	entity trigger = CreateEntity( "trigger_cylinder" )
-	trigger.SetRadius( 500 ) // was 150, vanilla's is surly much bigger
-	trigger.SetAboveHeight( 200 )
-	trigger.SetBelowHeight( 200 )
+	trigger.SetRadius( 200 ) // was 150, vanilla's is surly bigger
+	trigger.SetAboveHeight( 100 )
+	trigger.SetBelowHeight( 100 )
 	trigger.SetOrigin( dropship.GetOrigin() )
 	trigger.SetParent( dropship, "ORIGIN" )
 	DispatchSpawn( trigger )
