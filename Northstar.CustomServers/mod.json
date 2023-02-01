@@ -58,7 +58,7 @@
 	"Scripts": [
 		{
 			"Path": "sh_northstar_masterserver_messages.nut",
-			"RunOn": "SERVER",
+			"RunOn": "SERVER && MP",
 			"ServerCallback":{
 				"After": "RegisterMasterserverMessageCallback"
 			}
