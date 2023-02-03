@@ -157,16 +157,9 @@ void function WaitForPlayers()
 		WaitFrame()
 
 	print( "done waiting!" )
-
-	if( ClassicMP_IsRunningDropshipIntro() )
-	{
-		entity soundEnt = CreatePropDynamic( $"models/dev/empty_model.mdl" )
-		EmitSoundOnEntity( soundEnt, "classicmp_warpjump" )
-		wait 7.1 // sound duration - server delay
-	}
 	
 	wait 1.0 // bit nicer
-	if ( file.usePickLoadoutScreen )
+	if ( file.usePickLoadoutScreen || ClassicMP_IsRunningDropshipIntro() ) // warpjump sound will be played on client if we're in eGameState.PickLoadout
 		SetGameState( eGameState.PickLoadout )
 	else
 		SetGameState( eGameState.Prematch ) 
@@ -190,6 +183,8 @@ void function GameStateEnter_PickLoadout()
 void function GameStateEnter_PickLoadout_Threaded()
 {	
 	float pickloadoutLength = 20.0 // may need tweaking
+	if ( ClassicMP_IsRunningDropshipIntro() )
+		pickloadoutLength = 7.3 // warp jump sound duration
 	SetServerVar( "minPickLoadOutTime", Time() + pickloadoutLength )
 	
 	// titan selection menu can change minPickLoadOutTime so we need to wait manually until we hit the time
@@ -1275,12 +1270,12 @@ void function PlayScoreEventFactionDialogue( string winningLarge, string losingL
 			PlayFactionDialogueToTeam( "scoring_" + tied, TEAM_MILITIA )
 		}
 	}
-	else if( winningTeamScore - losingTeamScore >= totalScore * 0.5 )
+	else if( winningTeamScore - losingTeamScore >= totalScore * 0.4 )
 	{
 		PlayFactionDialogueToTeam( "scoring_" + winningLarge, winningTeam )
 		PlayFactionDialogueToTeam( "scoring_" + losingLarge, losingTeam )
 	}
-	else if( winningTeamScore - losingTeamScore <= totalScore * 0.25 )
+	else if( winningTeamScore - losingTeamScore <= totalScore * 0.1 )
 	{
 		PlayFactionDialogueToTeam( "scoring_" + winningClose, winningTeam )
 		PlayFactionDialogueToTeam( "scoring_" + losingClose, losingTeam )
