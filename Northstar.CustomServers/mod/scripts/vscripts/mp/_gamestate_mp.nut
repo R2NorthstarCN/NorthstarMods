@@ -183,7 +183,7 @@ void function GameStateEnter_PickLoadout()
 void function GameStateEnter_PickLoadout_Threaded()
 {	
 	float pickloadoutLength = 20.0 // may need tweaking
-	if ( ClassicMP_IsRunningDropshipIntro() )
+	if ( ClassicMP_IsRunningDropshipIntro() && !file.usePickLoadoutScreen )
 		pickloadoutLength = 7.3 // warp jump sound duration
 	SetServerVar( "minPickLoadOutTime", Time() + pickloadoutLength )
 	
