@@ -1270,12 +1270,12 @@ void function PlayScoreEventFactionDialogue( string winningLarge, string losingL
 			PlayFactionDialogueToTeam( "scoring_" + tied, TEAM_MILITIA )
 		}
 	}
-	else if( winningTeamScore - losingTeamScore >= totalScore * 0.5 )
+	else if( winningTeamScore - losingTeamScore >= totalScore * 0.4 )
 	{
 		PlayFactionDialogueToTeam( "scoring_" + winningLarge, winningTeam )
 		PlayFactionDialogueToTeam( "scoring_" + losingLarge, losingTeam )
 	}
-	else if( winningTeamScore - losingTeamScore <= totalScore * 0.25 )
+	else if( winningTeamScore - losingTeamScore <= totalScore * 0.1 )
 	{
 		PlayFactionDialogueToTeam( "scoring_" + winningClose, winningTeam )
 		PlayFactionDialogueToTeam( "scoring_" + losingClose, losingTeam )
