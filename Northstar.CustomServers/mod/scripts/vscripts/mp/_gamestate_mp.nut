@@ -345,7 +345,8 @@ void function GameStateEnter_WinnerDetermined_Threaded()
 	
 	WaitFrame() // wait a frame so other scripts can setup killreplay stuff
 
-	DialoguePlayWinnerDetermined() // play a faction dialogue when winner is determined
+	if( isMatchEnd ) // no winner dialogue till game really ends
+		DialoguePlayWinnerDetermined( winningTeam ) // play a faction dialogue when winner is determined
 	
 	// set gameEndTime to current time, so hud doesn't display time left in the match
 	SetServerVar( "gameEndTime", Time() )
@@ -1196,13 +1197,12 @@ void function DialoguePlayNormal()
 	}
 }
 
-void function DialoguePlayWinnerDetermined()
+void function DialoguePlayWinnerDetermined( int winningTeam )
 {
-	if( IsFFAGame() )
+	if( IsFFAGame() ) // no support for now
 		return
-	int winningTeam = TEAM_UNASSIGNED
 
-	if( file.enteredSuddenDeath && !IsFFAGame() || !RespawnsEnabled() ) // respawn not enabled, or game in sudden death
+	if( file.enteredSuddenDeath || !RespawnsEnabled() ) // respawn not enabled, or game in sudden death
 	{
 		if( GetPlayerArrayOfTeam_Alive( TEAM_MILITIA ).len() > GetPlayerArrayOfTeam_Alive( TEAM_IMC ).len() )
 			winningTeam = TEAM_MILITIA
@@ -1215,14 +1215,6 @@ void function DialoguePlayWinnerDetermined()
 			PlayFactionDialogueToTeam( "scoring_lost", GetOtherTeam( winningTeam ) )
 		}
 		return
-	}
-
-	if( IsRoundBased() ) // check for round based modes
-	{
-		if( winningTeam == TEAM_UNASSIGNED )
-			return
-		if( GameRules_GetTeamScore( winningTeam ) != GameMode_GetRoundScoreLimit( GAMETYPE ) ) // no winner dialogue till game really ends
-			return
 	}
 
 	PlayScoreEventFactionDialogue( "wonMercy", "lostMercy", "won", "lost", "wonClose", "lostClose", "tied" )
