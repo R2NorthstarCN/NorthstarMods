@@ -109,7 +109,7 @@ void function AiGameModes_SpawnDropPod( vector pos, vector rot, int team, string
 	ActivateFireteamDropPod( pod, guys )
 }
 
-const float REAPER_WARPFALL_DELAY = 5.0
+const float REAPER_WARPFALL_DELAY = 6.0
 void function AiGameModes_SpawnReaper( vector pos, vector rot, int team, string aiSettings = "", void functionref( entity reaper ) reaperHandler = null )
 {
 	thread Reaper_Spawnpoint( pos, team, REAPER_WARPFALL_DELAY + 1.2 ) // reaper takes 1.2s to warpfall
