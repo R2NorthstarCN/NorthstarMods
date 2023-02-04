@@ -240,6 +240,7 @@ void function Evac( int evacTeam, float initialWait, float arrivalTime, float wa
 	entity effectFriendly = StartParticleEffectInWorld_ReturnEntity( index, evacNode.GetOrigin(), < 0,0,0 > )
 	SetTeam( effectFriendly, evacTeam )
 	effectFriendly.kv.VisibilityFlags = ENTITY_VISIBLE_TO_FRIENDLY
+	effectFriendly.DisableHibernation() // prevent it from fading out
 
 	wait 0.5 // need to wait here, or the target won't appear on clients for some reason
 	// eta until arrive
