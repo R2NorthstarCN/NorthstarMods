@@ -42,8 +42,9 @@ void function OnClientConnected( entity player )
 {
 	string uid = player.GetUID()
 	FFAScoreStruct emptyStruct
-	if ( !( uid in file.ffaPlayerScoreTable ) ) // first connecting?
+	if ( !( uid in file.ffaPlayerScoreTable ) )
 		file.ffaPlayerScoreTable[ uid ] <- emptyStruct // init a empty struct
+	file.ffaPlayerScoreTable[ uid ].score = 0 // start from 0
 
 	thread FFAPlayerScoreThink( player ) // good to have this! instead of DisconnectCallback this could handle a null player
 }
@@ -61,6 +62,7 @@ void function FFAPlayerScoreThink( entity player )
 			int score = file.ffaPlayerScoreTable[ uid ].score
 
 			AddTeamScore( team, -score )
+			delete file.ffaPlayerScoreTable[ uid ] // delete existing struct
 		}
 	)
 
