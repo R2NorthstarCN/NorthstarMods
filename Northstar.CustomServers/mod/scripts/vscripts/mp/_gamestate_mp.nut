@@ -183,8 +183,14 @@ void function GameStateEnter_PickLoadout()
 void function GameStateEnter_PickLoadout_Threaded()
 {	
 	float pickloadoutLength = 20.0 // may need tweaking
+
+	// warpjump style
 	if ( ClassicMP_IsRunningDropshipIntro() && !file.usePickLoadoutScreen )
+	{
 		pickloadoutLength = 7.3 // warp jump sound duration
+		thread PlayerScreenFadeToBlack() // this is required for late joiners screen fade to black
+	}
+
 	SetServerVar( "minPickLoadOutTime", Time() + pickloadoutLength )
 	
 	// titan selection menu can change minPickLoadOutTime so we need to wait manually until we hit the time
@@ -192,6 +198,20 @@ void function GameStateEnter_PickLoadout_Threaded()
 		WaitFrame()
 	
 	SetGameState( eGameState.Prematch )
+}
+
+void function PlayerScreenFadeToBlack()
+{
+	svGlobal.levelEnt.EndSignal( "GameStateChanged" )
+
+	while ( GetGameState() == eGameState.PickLoadout )
+	{
+		foreach ( entity player in GetPlayerArray() )
+		{
+			ScreenFadeToBlackForever( player, 0.1 )
+		}
+		WaitFrame()
+	}
 }
 
 
