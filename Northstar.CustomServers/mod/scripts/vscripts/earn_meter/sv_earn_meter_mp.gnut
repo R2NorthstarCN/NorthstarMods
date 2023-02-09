@@ -270,6 +270,7 @@ void function DelayedCheckTitanReady( entity player )
 			GetGameState() == eGameState.Playing
 		  )
 			PlayFactionDialogueToPlayer( "mp_titanReady", player )
+	}
 }
 
 void function EarnMeterMP_SetBoostByRef( entity player, string boostRef ) 
