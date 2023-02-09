@@ -35,9 +35,9 @@ struct {
 	array<entity> specCams
 	
 	// modified
-	bool forcedRespawn = true
+	bool forcedRespawn
 
-	bool enableLateRespawn = true
+	bool enableLateRespawn
 	array<string> respawnedPlayerUIDs = []
 
 	entity functionref( entity player, entity basePoint ) recalculateRespawnAsTitanStartPointCallback
@@ -56,8 +56,12 @@ void function BaseGametype_Init_MPSP()
 	RegisterSignal( "PlayerRespawnStarted" )
 	RegisterSignal( "KillCamOver" )
 
+	// playlistvars for easier modifying
 	AddPrivateMatchModeSettingEnum( "#MODE_SETTING_CATEGORY_PILOT", "force_respawn", [ "#SETTING_DISABLED", "#SETTING_ENABLED" ], "1" )
 	AddPrivateMatchModeSettingEnum( "#MODE_SETTING_CATEGORY_PILOT", "late_join_respawn", [ "#SETTING_DISABLED", "#SETTING_ENABLED" ], "1" )
+
+	file.forcedRespawn = GetCurrentPlaylistVarInt( "force_respawn" ) == 1
+	file.enableLateRespawn = GetCurrentPlaylistVarInt( "late_join_respawn" ) == 1
 }
 
 #if SERVER
@@ -197,7 +201,7 @@ void function CodeCallback_OnClientConnectionCompleted( entity player )
 
 void function HandleRespawningLateJoiners( entity player )
 {
-	if ( !file.enableLateRespawn || GetCurrentPlaylistVarInt( "late_join_respawn" ) == 1 ) // this is required for recovering behaviors
+	if ( !file.enableLateRespawn ) // this is required for recovering behaviors
 		return
 	if ( GetGameState() == eGameState.Playing )
 	{
@@ -485,7 +489,7 @@ void function PostDeathThread_MP( entity player, var damageInfo ) // based on ga
 		
 		wait respawnDelay
 
-		if( file.forcedRespawn || GetCurrentPlaylistVarInt( "force_respawn" ) == 1 ) // allow server hosters to disable forced respawn if they want
+		if( file.forcedRespawn ) // allow server hosters to disable forced respawn if they want
 		{
 			float waitBeforeRespawn = 0.0
 			//if( !shouldDoReplay || respawnDelay >= 3.0 ) // doing this so player can respawn as titan in some modes, but vanilla don't features this lol
