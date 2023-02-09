@@ -191,8 +191,6 @@ void function CodeCallback_OnClientConnectionCompleted( entity player )
 
 void function HandleRespawningLateJoiners( entity player )
 {
-	if ( !file.enableLateRespawn ) // this is required for recovering behaviors
-		return
 	if ( GetGameState() == eGameState.Playing )
 	{
 		bool connectingRespawned = false
@@ -215,7 +213,7 @@ void function HandleRespawningLateJoiners( entity player )
 				shouldDoLateSpawn = true
 
 			// do this so player don't have to wait so long till round end
-			if( shouldDoLateSpawn )
+			if( shouldDoLateSpawn && file.enableLateRespawn ) // never try to respawn if this mechanic is disabled manually
 			{
 				if ( Riff_SpawnAsTitan() == 1 )	// spawn as titan
 					thread RespawnAsTitan( player )
