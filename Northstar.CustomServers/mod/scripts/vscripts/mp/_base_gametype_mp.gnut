@@ -201,8 +201,6 @@ void function CodeCallback_OnClientConnectionCompleted( entity player )
 
 void function HandleRespawningLateJoiners( entity player )
 {
-	if ( !file.enableLateRespawn ) // this is required for recovering behaviors
-		return
 	if ( GetGameState() == eGameState.Playing )
 	{
 		bool connectingRespawned = false
@@ -223,6 +221,9 @@ void function HandleRespawningLateJoiners( entity player )
 				shouldDoLateSpawn = true
 			else if( !file.respawnedPlayerUIDs.contains( player.GetUID() ) ) // avoid multiple late spawns by disconnecting
 				shouldDoLateSpawn = true
+
+			if ( !file.enableLateRespawn ) // never try to respawn if this mechanic is disabled manually
+				shouldDoLateSpawn = false	
 
 			// do this so player don't have to wait so long till round end
 			if( shouldDoLateSpawn )
