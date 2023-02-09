@@ -189,7 +189,7 @@ void function CodeCallback_OnClientConnectionCompleted( entity player )
 	HandleRespawningLateJoiners( player )
 }
 
-bool function HandleRespawningLateJoiners( entity player )
+void function HandleRespawningLateJoiners( entity player )
 {
 	if ( !file.enableLateRespawn ) // this is required for recovering behaviors
 		return
