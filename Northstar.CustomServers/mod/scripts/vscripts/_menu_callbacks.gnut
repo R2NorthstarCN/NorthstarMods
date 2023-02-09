@@ -16,16 +16,16 @@ bool function ClientCommandCallback_LeaveMatch( entity player, array<string> arg
 			GameRules_EndMatch()
 			return true
 		}
-	
+
 		foreach ( entity otherPlayer in GetPlayerArray() )
 			if ( otherPlayer != player )
 				thread WritePersistenceAndLeave( otherPlayer )
-		
+
 		thread WritePersistenceAndLeaveForLocalPlayerOnly( player )
 	}
 	else
 		thread WritePersistenceAndLeave( player )
-		
+
 	return true
 }
 
@@ -34,7 +34,7 @@ void function WritePersistenceAndLeaveForLocalPlayerOnly( entity player )
 	float time = Time()
 	while ( GetPlayerArray().len() != 1 && Time() < time + 5.0 )
 		WaitFrame()
-	
+
 	if ( IsValid( player ) )
 		WritePersistenceAndLeave( player )
 }
@@ -46,9 +46,9 @@ void function WritePersistenceAndLeave( entity player )
 	// write player persistence before we leave, since leaving player might load local lobby before server writes persistence, so they won't get newest
 	// not super essential, but a nice qol thing
 	NSEarlyWritePlayerPersistenceForLeave( player )
-	while ( NSIsWritingPlayerPersistence() )
+	while ( NSIsWritingPlayerPersistence( player.GetUID() ) )
 		WaitFrame()
-	
+
 	// this is a custom concommand which can be called on clients, it causes them to leave and doesn't have issues if they're host
 	ClientCommand( player, "ns_start_reauth_and_leave_to_lobby" )
 }
@@ -60,11 +60,11 @@ bool function ClientCommandCallback_GenUp( entity player, array<string> args )
 	{
 		player.SetPersistentVar( "xp", 0 )
 		player.SetPersistentVar( "gen", gen + 1 )
-		
+
 		// ensure client updates properly
 		player.GenChanged()
 		player.XPChanged()
 	}
-	
+
 	return true
 }
