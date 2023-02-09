@@ -27,6 +27,10 @@ global function ShouldRunEvac
 global function GiveTitanToPlayer
 global function GetTimeLimit_ForGameMode
 
+// modified functions to control music player
+global function SetShouldPlayDefaultMusic
+global function SetMusicScoreEventPercentage
+
 // i want my game to have these!
 global function SetWaitingForPlayersMaxDuration // so you don't have to wait so freaking long
 
@@ -64,6 +68,12 @@ struct {
 
 	// modified
 	bool enteredSuddenDeath = false
+
+
+	// default value setting here, modified!
+	bool hasPlayedMusic = false
+	float musicScoreEventPercentage = 0.6
+	bool shouldPlayMusic = false // for there's only certain modes need music, set it to false by default
 
 	float waitingForPlayersMaxDuration = 20.0
 } file
@@ -1297,6 +1307,152 @@ void function PlayScoreEventFactionDialogue( string winningLarge, string losingL
 		PlayFactionDialogueToTeam( "scoring_" + winning, winningTeam )
 		PlayFactionDialogueToTeam( "scoring_" + losing, losingTeam )
 	}
+}
+
+// modified functions for default music
+void function SetShouldPlayDefaultMusic( bool should )
+{
+    file.shouldPlayMusic = should
+}
+
+void function SetMusicScoreEventPercentage( float percentage )
+{
+    file.musicScoreEventPercentage = percentage
+}
+
+void function OnGamePrematch()
+{
+
+}
+
+void function OnPlayerKilled( entity victim, entity attacker, var damageInfo )
+{
+	if( !GamePlayingOrSuddenDeath() ) // prevent prematch cleanups mess music up
+		return
+    if( file.shouldPlayMusic )
+	    MusicPlayScoreEvent()
+}
+
+void function OnGameStart()
+{
+    if( file.shouldPlayMusic )
+		MusicPlayNormal()
+}
+
+void function MusicPlayScoreEvent()
+{
+	if( file.hasPlayedMusic )
+		return
+	
+	int score = GameMode_GetScoreLimit( GameRules_GetGameMode() )
+
+	if( IsFFAGame() ) // temp no need in ffa
+		return
+		
+	if( GameRules_GetTeamScore( TEAM_MILITIA ) >= score * file.musicScoreEventPercentage || GameRules_GetTeamScore( TEAM_IMC ) >= score * file.musicScoreEventPercentage )
+	{
+		CreateTeamMusicEvent( TEAM_IMC, eMusicPieceID.GAMEMODE_1, Time() )
+		CreateTeamMusicEvent( TEAM_MILITIA, eMusicPieceID.GAMEMODE_1, Time() )
+		foreach( entity player in GetPlayerArray() )
+			PlayCurrentTeamMusicEventsOnPlayer( player )
+		file.hasPlayedMusic = true
+	}
+}
+
+// hardcoded for now!!
+void function MusicPlayNormal()
+{
+	thread MusicPlayThink()
+}
+
+void function MusicPlayThink()
+{
+	svGlobal.levelEnt.EndSignal( "GameStateChanged" )
+	
+	float totalTime = float( GameMode_GetTimeLimit( GAMETYPE ) * 60 )
+	if( IsRoundBased() )
+	{ 
+		totalTime = GameMode_GetRoundTimeLimit( GAMETYPE ) * 60
+	}
+	// hardcoding here
+	if( IsSwitchSidesBased_NorthStar() )
+	{
+		totalTime *= 0.5
+		if( !HasSwitchedSides() ) // hasn't swiching sides
+			return
+	}
+	//print( "[Music Player] Total Time is: " + string( totalTime ) )
+	float almostDoneWaitTime = -1
+	float lastMinuteWaitTime = -1
+	
+	// checking totalTime..
+	if( totalTime >= 720 )
+	{
+		almostDoneWaitTime = totalTime*0.6
+		lastMinuteWaitTime = totalTime*0.4-60
+	}
+	else if( totalTime >= 600 )
+	{
+		almostDoneWaitTime = totalTime*0.5
+		lastMinuteWaitTime = totalTime*0.5-60
+	}
+	else if( totalTime >= 480 )
+	{
+		almostDoneWaitTime = totalTime*0.4
+		lastMinuteWaitTime = totalTime*0.6-60
+	}
+	else if( totalTime >= 360 )
+	{
+		almostDoneWaitTime = totalTime*0.3
+		lastMinuteWaitTime = totalTime*0.7-60
+	}
+	else if( totalTime >= 240 )
+	{
+		almostDoneWaitTime = totalTime*0.2
+		lastMinuteWaitTime = totalTime*0.8-60 // what I'm doing here, why this always plays so early?
+	}
+	else if( totalTime >= 120 )
+	{
+		lastMinuteWaitTime = totalTime-60
+	}
+	else // too short per round to have music
+		return
+		
+	if( almostDoneWaitTime != -1 )
+		wait almostDoneWaitTime
+		
+	if( !file.hasPlayedMusic )
+	{
+		CreateTeamMusicEvent( TEAM_IMC, eMusicPieceID.GAMEMODE_1, Time() )
+		CreateTeamMusicEvent( TEAM_MILITIA, eMusicPieceID.GAMEMODE_1, Time() )
+		foreach( entity player in GetPlayerArray() )
+			PlayCurrentTeamMusicEventsOnPlayer( player )
+		file.hasPlayedMusic = true
+	}
+	
+	if( lastMinuteWaitTime != -1 )
+		wait lastMinuteWaitTime
+	
+	CreateTeamMusicEvent( TEAM_IMC, eMusicPieceID.LEVEL_LAST_MINUTE, Time() )
+	CreateTeamMusicEvent( TEAM_MILITIA, eMusicPieceID.LEVEL_LAST_MINUTE, Time() )
+	foreach( entity player in GetPlayerArray() )
+		PlayCurrentTeamMusicEventsOnPlayer( player )
+}
+
+entity function GetWinningPlayer() 
+{
+	entity bestplayer
+
+	foreach ( entity player in GetPlayerArray() )
+	{
+		if( bestplayer == null )
+			bestplayer = player
+		
+		if( GameRules_GetTeamScore( player.GetTeam() ) > GameRules_GetTeamScore( bestplayer.GetTeam() ) )
+			bestplayer = player
+	}
+
+	return bestplayer
 }
 
 void function SetWaitingForPlayersMaxDuration( float duration )
