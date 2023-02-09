@@ -270,8 +270,6 @@ void function DelayedCheckTitanReady( entity player )
 			GetGameState() == eGameState.Playing
 		  )
 			PlayFactionDialogueToPlayer( "mp_titanReady", player )
-		else
-			ClearTitanAvailable( player )
 	}
 }
 
