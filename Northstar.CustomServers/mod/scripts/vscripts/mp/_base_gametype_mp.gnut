@@ -17,6 +17,7 @@ global function TrackTitanDamageInPlayerGameStat
 
 // I want my game to have this
 global function SetPlayerRespawnForced
+global function SetLateJoinRespawnEnabled
 global function SetPlayerCameraToIntermissionCam
 
 global function ShouldEntTakeDamage_SPMP
@@ -35,6 +36,8 @@ struct {
 	
 	// modified
 	bool forcedRespawn = true
+
+	bool enableLateRespawn = true
 	array<string> respawnedPlayerUIDs = []
 
 	entity functionref( entity player, entity basePoint ) recalculateRespawnAsTitanStartPointCallback
@@ -183,6 +186,13 @@ void function CodeCallback_OnClientConnectionCompleted( entity player )
 		player.SetPersistentVar( "privateMatchState", 0 )
 
 	// handle spawning late joiners
+	HandleRespawningLateJoiners( player )
+}
+
+void function HandleRespawningLateJoiners( entity player )
+{
+	if ( !file.enableLateRespawn ) // this is required for recovering behaviors
+		return
 	if ( GetGameState() == eGameState.Playing )
 	{
 		bool connectingRespawned = false
@@ -222,6 +232,7 @@ void function CodeCallback_OnClientConnectionCompleted( entity player )
 	else if ( GetGameState() == eGameState.Epilogue || GetGameState() == eGameState.SuddenDeath )// don't know why northstar not handling these
 		thread PlayerBecomesSpectator( player )
 }
+
 
 void function DelayedGamemodeAnnouncement( entity player )
 {
@@ -711,6 +722,11 @@ void function SetPlayerDeathsHidden( bool hidden )
 void function SetPlayerRespawnForced( bool forced )
 {
 	file.forcedRespawn = forced
+}
+
+void function SetLateJoinRespawnEnabled( bool enabled )
+{
+	file.enableLateRespawn = enabled
 }
 
 void function TrackTitanDamageInPlayerGameStat( int playerGameStat )
