@@ -240,7 +240,7 @@ void function HandleRespawningLateJoiners( entity player )
 		if( connectingRespawned )
 			thread DelayedGamemodeAnnouncement( player )
 	}
-	else if ( GetGameState() == eGameState.Epilogue || GetGameState() == eGameState.SuddenDeath )// don't know why northstar not handling these
+	else if ( GetGameState() == eGameState.Epilogue || GetGameState() == eGameState.SuddenDeath ) // no way to respawn? try to become a spectator
 		thread PlayerBecomesSpectator( player )
 }
 
