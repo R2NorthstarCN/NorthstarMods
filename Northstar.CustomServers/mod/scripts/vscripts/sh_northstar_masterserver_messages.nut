@@ -26,7 +26,7 @@ void function DoMasterserverMessagePoll()
     if(GetGameState() != eGameState.Playing)
     {
         return
-    } // only start listening when game is running 
+    } // only start listening when game is running
 
     string jsonstring = NSGetLastMasterserverMessage()
     if (jsonstring == "none")
@@ -44,10 +44,10 @@ void function DoMasterserverMessagePoll()
     {
         return
     }
-    
+
     try{
         switch(msgtype)
-            {   
+            {
                 case "large":
                     if("title" in msg && "content" in msg && "duration" in msg && "picture" in msg)
                     {
@@ -62,7 +62,7 @@ void function DoMasterserverMessagePoll()
                     }
                     break
                 case "info":
-                    
+
                     if("content" in msg)
                     {
                         string content = string(msg["content"])
@@ -96,7 +96,7 @@ void function DoMasterserverMessagePoll()
 
                         foreach(entity player in GetPlayerArray())
                         {
-                            
+
                             NSSendAnnouncementMessageToPlayer( player, title,  content, color, priority, style )
                         }
                     }
@@ -124,13 +124,13 @@ void function DoMasterserverMessagePoll()
                         string content = "已封禁" + string(msg["content"])
                         float duration = 5.0
                         string uid = string(msg["uid"])
-                        
+
                         foreach(entity player in GetPlayerArray())
                         {
                             NSCreateStatusMessageOnPlayer( player, title,  content, "placeholder_status_id" )
                             if(player.GetUID() == uid)
                             {
-                                ClientCommand(player,"disconnect #KICKED_BY_FAIRFIGHT")
+                                NSDisconnectPlayer(player,"您已被封禁!")
                             }
                         }
                         wait duration
@@ -139,7 +139,7 @@ void function DoMasterserverMessagePoll()
                             NSDeleteStatusMessageOnPlayer( player,"placeholder_status_id" )
                         }
                     }
-                
+
             }
         }
         catch(ex)
@@ -147,7 +147,7 @@ void function DoMasterserverMessagePoll()
             print(ex)
             return
         }
-   
-    
+
+
     return
 }
