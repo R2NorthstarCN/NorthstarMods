@@ -29,21 +29,40 @@ void function UpdateDisallowedWeaponList()
 void function ReplacePlayerWeapons( entity player )
 {
 	UpdateDisallowedWeaponList()
-	if ( file.disallowedWeapons.len() == 0 )
+	if ( file.disallowedWeapons.len() == 0 && allowedweaps.allowedWeapons.len() == 0 )
 		return
 	
 	bool hadDisallowedWeapon = false
-
-	foreach ( entity weapon in player.GetMainWeapons() )
+	if(GetConVarBool("ns_disallowed_weapons_whitelistmode") == true)
 	{
-		if ( file.disallowedWeapons.contains( weapon.GetWeaponClassName() ) )
+		// Whitelist mode enabled, only allowed weapons are kept
+		foreach ( entity weapon in player.GetMainWeapons() )
 		{
-			player.TakeWeaponNow( weapon.GetWeaponClassName() )
-			player.GiveWeapon( file.disallowedWeaponReplacement )
-			hadDisallowedWeapon = true
+			if ( !file.disallowedWeapons.contains( weapon.GetWeaponClassName() ) )
+			{
+				player.TakeWeaponNow( weapon.GetWeaponClassName() )
+				player.GiveWeapon( file.disallowedWeaponReplacement )
+				hadDisallowedWeapon = true
+			}
 		}
 	}
-	
+	else
+	{
+		// Blacklist mode enabled, remove all disallowed weapons
+		foreach ( entity weapon in player.GetMainWeapons() )
+		{
+			if ( file.disallowedWeapons.contains( weapon.GetWeaponClassName() ) )
+			{
+				player.TakeWeaponNow( weapon.GetWeaponClassName() )
+				player.GiveWeapon( file.disallowedWeaponReplacement )
+				hadDisallowedWeapon = true
+			}
+		}
+
+	}
+
+
+
 	if ( hadDisallowedWeapon )
 		SendHudMessage( player, "Restricted weapons were removed", -1, 0.4, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
 }
