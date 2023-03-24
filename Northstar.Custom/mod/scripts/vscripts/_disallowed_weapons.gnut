@@ -29,7 +29,7 @@ void function UpdateDisallowedWeaponList()
 void function ReplacePlayerWeapons( entity player )
 {
 	UpdateDisallowedWeaponList()
-	if ( file.disallowedWeapons.len() == 0 && allowedweaps.allowedWeapons.len() == 0 )
+	if ( file.disallowedWeapons.len() == 0 )
 		return
 	
 	bool hadDisallowedWeapon = false
