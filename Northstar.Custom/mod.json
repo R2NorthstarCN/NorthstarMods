@@ -17,6 +17,10 @@
 			"DefaultValue": ""
 		},
 		{
+			"Name": "ns_disallowed_weapons_whitelistmode",
+			"DefaultValue": ""
+		},
+		{
 			"Name": "ns_disallowed_weapon_primary_replacement",
 			"DefaultValue": "mp_weapon_rspn101"
 		},
