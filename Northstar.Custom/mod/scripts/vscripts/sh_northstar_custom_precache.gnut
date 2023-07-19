@@ -12,6 +12,9 @@ void function NorthstarCustomPrecache()
 		{
 			mp_weapon_peacekraber = "#WPN_PEACEKRABER",
 			melee_pilot_kunai = "#MELEE_KUNAI"
+			// northstar missing
+			mp_titanweapon_triplethreat = "#WPN_TITAN_TRIPLE_THREAT",
+			mp_weapon_shotgun_doublebarrel_tfo = "#WPN_SHOTGUN_DBLBARREL_TFO"
 		}
 	)
 }
