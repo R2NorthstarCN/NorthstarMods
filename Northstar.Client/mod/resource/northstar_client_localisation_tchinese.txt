@@ -346,7 +346,7 @@
 		"MOD_SETTINGS_RESET_ALL"             "重置所有"
 		"SHOW_ONLY_NOT_REQUIRED"             "僅展示非必需模組"
 		"SHOW_ONLY_REQUIRED"             "僅展示必須模組"
-		"MOD_SETTINGS"             "模组设置"
+		"MOD_SETTINGS"             "模組設置"
 		"ONLY_HOST_MATCH_SETTINGS"             "只有服主可以修改私人對局設置"
 		"DISALLOWED_WEAPONS"             "禁用的武器"
 		"REPLACEMENT_WEAPON"             "替换的武器"
