@@ -1,14 +1,21 @@
 WeaponData
 {
-	// mod for testing low damage, high knockback "shove" melee rebalance
-	test_push
-	{
-		"melee_damage" "5"
-		"impulse_force" "150000"
-	}
-
 	Mods
 	{
+		// vanilla weapon mods. needs to register so clients can have proper mod list
+		rocket_arena
+		{
+		}
+
+
+		// custom mods
+		// mod for testing low damage, high knockback "shove" melee rebalance
+		test_push
+		{
+			"melee_damage" "5"
+			"impulse_force" "150000"
+		}
+
 		allow_as_primary
 		{
 			"fire_mode"									"offhand_melee_hybrid"

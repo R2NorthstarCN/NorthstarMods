@@ -2,6 +2,19 @@ WeaponData
 {
 	Mods
 	{
+		// vanilla weapon mods. needs to register so clients can have proper mod list
+		pm0
+		{
+		}
+		pm1
+		{
+		}
+		pm2
+		{
+		}
+
+
+		// custom mods
 		allow_as_primary
 		{
 			"fire_mode"									"offhand_melee_hybrid"
