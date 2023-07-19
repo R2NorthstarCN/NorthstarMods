@@ -2,6 +2,43 @@ WeaponData
 {
 	Mods
 	{
+		// vanilla weapon mods. needs to register so clients can have proper mod list
+		ar_trajectory
+		{
+		}
+        extended_ammo
+		{
+		}
+		pro_screen
+		{
+		}
+		pro_screenextended_ammo
+		{
+		}
+		pas_fast_ads
+		{
+		}
+		pas_fast_swap
+		{
+		}
+		jump_kit
+        {
+        }
+		pas_fast_reload
+		{
+		}
+		burn_mod_softball
+		{
+		}
+		tactical_cdr_on_kill
+		{
+		}
+		pas_run_and_gun
+		{
+		}
+
+
+		// custom mods
 		sns
 		{
 			explosion_damage "50"

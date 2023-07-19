@@ -5,12 +5,16 @@ void function NorthstarCustomPrecache()
 	PrecacheWeapon( "mp_weapon_peacekraber" )
 	PrecacheWeapon( "mp_titanweapon_triplethreat" )
 	PrecacheWeapon( "mp_titanweapon_arc_cannon" )
+	PrecacheWeapon( "mp_weapon_shotgun_doublebarrel_tfo" )
 	PrecacheWeapon( "melee_pilot_kunai" )
 
 	RegisterWeaponDamageSources(
 		{
 			mp_weapon_peacekraber = "#WPN_PEACEKRABER",
 			melee_pilot_kunai = "#MELEE_KUNAI"
+			// northstar missing
+			mp_titanweapon_triplethreat = "#WPN_TITAN_TRIPLE_THREAT",
+			mp_weapon_shotgun_doublebarrel_tfo = "#WPN_SHOTGUN_DBLBARREL_TFO"
 		}
 	)
 }
