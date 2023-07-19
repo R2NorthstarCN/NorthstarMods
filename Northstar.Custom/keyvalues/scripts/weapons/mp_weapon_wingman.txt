@@ -2,10 +2,53 @@ WeaponData
 {
 	Mods
 	{
-        	one_in_the_chamber
+		// vanilla weapon mods. needs to register so clients can have proper mod list
+		iron_sights
 		{
-            		damage_near_value "9999"
-            		damage_far_value "9999"
+		}
+		extended_ammo
+		{
+		}
+		silencer
+		{
+		}
+		hcog
+		{
+		}
+		redline_sight
+		{
+		}
+		threat_scope
+		{
+		}
+		pro_screen
+		{
+		}
+		tactical_cdr_on_kill
+		{
+		}
+		pas_fast_reload
+		{
+		}
+		pas_run_and_gun
+		{
+		}
+		pas_fast_ads
+		{
+		}
+		pas_fast_swap
+		{
+		}
+		burn_mod_wingman
+		{
+		}
+
+
+		// custom mods
+        one_in_the_chamber
+		{
+			damage_near_value "9999"
+			damage_far_value "9999"
 		}
 	}
 }
