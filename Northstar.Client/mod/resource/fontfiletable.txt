@@ -1,16 +1,16 @@
 FontFileTable
 {
 	"Default"					"resource/MetronicPro-Regular.vfont"	[!$JAPANESE && !$TCHINESE]
-	"Default"					"resource/NotoSansJP-Regular.vfont"		[$JAPANESE]
-	"Default"					"resource/NotoSansTC-Regular.vfont"		[$TCHINESE]
+	"Default"					"resource/SourceHanSansCN-Regular.ttf"		[$JAPANESE]
+	"Default"					"resource/SourceHanSansCN-Regular.ttf"		[$TCHINESE]
 
 	"DefaultBold"				"resource/MetronicPro-SemiBold.vfont"	[!$JAPANESE && !$TCHINESE]
-	"DefaultBold"				"resource/NotoSansJP-Regular.vfont"		[$JAPANESE]
-	"DefaultBold"				"resource/NotoSansTC-Regular.vfont"		[$TCHINESE]
+	"DefaultBold"				"resource/SourceHanSansCN-Regular.ttf"		[$JAPANESE]
+	"DefaultBold"				"resource/SourceHanSansCN-Regular.ttf"		[$TCHINESE]
 
 	"Titanfall"					"resource/Titanfall-Regular.vfont"		[!$JAPANESE && !$TCHINESE && !$RUSSIAN]
-	"Titanfall"					"resource/NotoSansJP-Regular.vfont"		[$JAPANESE]
-	"Titanfall"					"resource/NotoSansTC-Regular.vfont"		[$TCHINESE]
+	"Titanfall"					"resource/SourceHanSansCN-Regular.ttf"		[$JAPANESE]
+	"Titanfall"					"resource/SourceHanSansCN-Regular.ttf"		[$TCHINESE]
 	"Titanfall"					"resource/MetronicPro-SemiBold.vfont"	[$RUSSIAN]
 
 	"marlett"					"vgui/fonts/marlett.ttf"
@@ -19,7 +19,7 @@ FontFileTable
 
 	"arial unicode ms"			"resource/Lato-Regular.ttf"
 
-	"lucida console"			"resource/NorthstarMono.ttf"			[$PC]
+	"lucida console"			"resource/SourceHanMonoSC-Regular.otf"						[$PC]
 	"lucida console"			"resource/MetronicPro-Regular.vfont"	[$GAMECONSOLE]
 
 	"tahoma"					"fonts\\tahoma.ttf"						[$PC]
