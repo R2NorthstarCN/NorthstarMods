@@ -460,7 +460,10 @@ void function SquadHandler( array<entity> guys )
 		// Get point and send our whole squad to it
 		points = GetNPCArrayOfEnemies( team )
 		if ( points.len() == 0 ) // can't find any points here
+		{
+			WaitFrame() // wait before next loop, so we don't stuck forever
 			continue
+		}
 			
 		point = points[ RandomInt( points.len() ) ].GetOrigin()
 		
