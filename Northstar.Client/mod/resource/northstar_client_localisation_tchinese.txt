@@ -13,11 +13,11 @@
 		"DISABLE" "停用"
 
 		"DIALOG_TITLE_INSTALLED_NORTHSTAR" "感謝安裝NorthStarCN!"
-		"AUTHENTICATION_AGREEMENT_DIALOG_TEXT" "- 要使 NorthStarCN 正常工作, Northstar 需要連接至主服務器(MasterServer)進行驗證.此操作NotrchStar客戶端會將您的Origin賬號信息生成Token發送至主務器用於驗證和支持多人游玩,此操作不會將你的信息存儲或使用在任何其他地方.
-		- 點擊 確定 代表你同意明白上述協議,如果不同意則無法正常完整使用NorthStarCN.
-		- 這個選項可以隨時在 MODS 菜單中更改.
-		- 當前仍在不斷完善，想要瞭解更多信息可以訪問我們項目地址:
-		  https://wiki.northstar.cool/"
+		"AUTHENTICATION_AGREEMENT_DIALOG_TEXT" "    要使 NorthStarCN 正常工作, Northstar 需要連接至主服務器(MasterServer)進行驗證.此操作NotrchStar客戶端會將您的Origin賬號信息生成Token發送至主務器用於驗證和支持多人游玩,此操作不會將你的信息存儲或使用在任何其他地方.
+		    點擊 確定 代表你同意明白上述協議,如果不同意則無法正常完整使用NorthStarCN.
+		    這個選項可以隨時在 MODS 菜單中更改.
+		    當前仍在不斷完善，想要瞭解更多信息可以訪問我們項目地址:
+		    https://wiki.northstar.cool/"
 		"BACK_AUTHENTICATION_AGREEMENT" "驗證協議"
 		"AUTHENTICATION_AGREEMENT" "驗證協議"
 		"AUTHENTICATION_AGREEMENT_RESTART" "你需要重啟游戲來使操作生效!"
