@@ -2,19 +2,33 @@ global function NorthstarCustomPrecache
 
 void function NorthstarCustomPrecache()
 {
-	PrecacheWeapon( "mp_weapon_peacekraber" )
-	PrecacheWeapon( "mp_titanweapon_triplethreat" )
-	PrecacheWeapon( "mp_titanweapon_arc_cannon" )
-	PrecacheWeapon( "mp_weapon_shotgun_doublebarrel_tfo" )
-	PrecacheWeapon( "melee_pilot_kunai" )
+	// server-side percache
+	#if SERVER
+		PrecacheWeapon( "mp_weapon_peacekraber" )
+		PrecacheWeapon( "mp_titanweapon_triplethreat" )
+		PrecacheWeapon( "mp_titanweapon_arc_cannon" )
+		PrecacheWeapon( "mp_weapon_shotgun_doublebarrel_tfo" )
+		PrecacheWeapon( "melee_pilot_kunai" )
 
-	RegisterWeaponDamageSources(
-		{
-			mp_weapon_peacekraber = "#WPN_PEACEKRABER",
-			melee_pilot_kunai = "#MELEE_KUNAI"
-			// northstar missing
-			mp_titanweapon_triplethreat = "#WPN_TITAN_TRIPLE_THREAT",
-			mp_weapon_shotgun_doublebarrel_tfo = "#WPN_SHOTGUN_DBLBARREL_TFO"
-		}
-	)
+		RegisterWeaponDamageSources(
+			{
+				mp_weapon_peacekraber = "#WPN_PEACEKRABER",
+				melee_pilot_kunai = "#MELEE_KUNAI"
+				// northstar missing
+				mp_titanweapon_triplethreat = "#WPN_TITAN_TRIPLE_THREAT",
+				mp_weapon_shotgun_doublebarrel_tfo = "#WPN_SHOTGUN_DBLBARREL_TFO"
+			}
+		)
+	#endif // SERVER
+
+	// shared precache
+	#if SERVER || CLIENT
+		// northstar missing: proper damageSource display name for arc cannon
+		RegisterWeaponDamageSourceName( "mp_titanweapon_arc_cannon", "#WPN_TITAN_ARC_CANNON" )
+	#endif // SERVER || CLIENT
+
+	// client-side prechache
+	#if CLIENT
+
+	#endif // CLIENT
 }

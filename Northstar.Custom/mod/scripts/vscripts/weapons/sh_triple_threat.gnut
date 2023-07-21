@@ -80,6 +80,9 @@ function FireTripleThreat( entity weapon, WeaponPrimaryAttackParams attackParams
 			shouldCreateProjectile = false
 	#endif
 
+	// Northstar missing: fix sound!!! default fire sound is too small in ttf2
+	weapon.EmitWeaponSound_1p3p( "Weapon_Softball_Fire_1P", "Weapon_Softball_Fire_3P")
+
 	entity bossPlayer = weaponOwner
 	bool hasRollingRoundsMod = weapon.HasMod( "rolling_rounds" )
 
