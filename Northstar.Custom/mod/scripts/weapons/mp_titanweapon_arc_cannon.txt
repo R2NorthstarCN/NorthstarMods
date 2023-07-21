@@ -104,9 +104,11 @@ WeaponData
 	"allow_headshots" 								"0"
 	"bypass_semiauto_hold_protection"				"1"
 	"vortex_drain"									".15"
-	"charge_effect_1p"								"wpn_arc_cannon_charge_fp"
-	"charge_effect_3p"								"wpn_arc_cannon_charge"
-	"charge_effect_attachment"						"muzzle_flash"	
+
+	// Fix Northstar: charge effect should be handled by script
+	//"charge_effect_1p"							"wpn_arc_cannon_charge_fp"
+	//"charge_effect_3p"							"wpn_arc_cannon_charge"
+	//"charge_effect_attachment"					"muzzle_flash"	
 
 
 

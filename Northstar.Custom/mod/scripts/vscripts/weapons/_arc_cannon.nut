@@ -187,6 +187,9 @@ function ArcCannon_ChargeBegin( entity weapon )
 		Assert( weaponOwner.IsPlayer() )
 		weaponOwner.StartArcCannon();
 	#endif
+
+	// effect handle
+	weapon.PlayWeaponEffect( $"wpn_arc_cannon_charge_fp", $"wpn_arc_cannon_charge", "muzzle_flash" )
 }
 
 function ArcCannon_ChargeEnd( entity weapon, entity player = null )
@@ -209,6 +212,9 @@ function ArcCannon_ChargeEnd( entity weapon, entity player = null )
 				weaponOwner.StopArcCannon()
 		}
 	#endif
+
+	// effect handle
+	weapon.StopWeaponEffect( $"wpn_arc_cannon_charge_fp", $"wpn_arc_cannon_charge" )
 }
 
 #if SERVER
