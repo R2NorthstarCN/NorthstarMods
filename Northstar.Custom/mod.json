@@ -39,7 +39,10 @@
 		},
 		{
 			"Path": "sh_northstar_custom_precache.gnut",
-			"RunOn": "SERVER && MP",
+			"RunOn": "( CLIENT || SERVER ) && MP",
+			"ClientCallback": {
+				"After": "NorthstarCustomPrecache"
+			},
 			"ServerCallback": {
 				"After": "NorthstarCustomPrecache"
 			}

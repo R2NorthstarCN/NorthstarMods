@@ -64,6 +64,16 @@ WeaponData
 	"ammo_min_to_fire"								"1"
 	"ammo_no_remove_from_stockpile"					"1"
 
+	// Sound: Northstar Missing
+	"charge_sound_1p"								"arc_cannon_charge"
+	"charge_sound_3p"								"arc_cannon_charge_3p"
+	"charge_sound_stop_when_full"					"1"
+	"charge_sound_seek_to_charge_fraction"			"1"
+	"charge_drain_sound_1p"							"Weapon_BatteryGun_CoolDownSizzle_1P"
+	"charge_drain_sound_stop_when_empty"			"1"
+	"charge_drain_sound_seek_to_charge_fraction"	"1"
+	"impact_sound" 									"MegaTurret_Laser_Fire_3P"
+
 	// Behavior
 	"fire_rate"   									"1"
 //	"rechamber_time"  									"0.25" //"1.30"
@@ -231,6 +241,10 @@ WeaponData
 		}
 		capacitor
 		{
+			// Sound: Northstar Missing
+			"charge_sound_1p"								"arc_cannon_fastcharge"
+			"charge_sound_3p"								"arc_cannon_fastcharge_3p"
+
 			"charge_time" 									"2.5" //for reference was 3 in 10/15 evening playtest
 			"charge_cooldown_time"							"1.0"
 			"charge_cooldown_delay"   						"0.0"
