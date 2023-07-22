@@ -321,7 +321,9 @@ bool function ShouldShowWeakpoints( entity ent )
 	}
 	else if ( ent.GetShieldHealthMax() )
 	{
-		if ( soul.GetShieldHealth() )
+		// fix respawn messy code crash
+		//if ( soul.GetShieldHealth() )
+		if ( ent.GetShieldHealth() )
 			return false
 	}
 
