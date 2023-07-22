@@ -1,17 +1,17 @@
 FontFileTable
 {
-	"Default"					"resource/MetronicPro-Regular.vfont"	[!$JAPANESE && !$TCHINESE]
+	"Default"					"resource/SourceHanSansCN-Regular.ttf"		[!$JAPANESE && !$TCHINESE]
 	"Default"					"resource/SourceHanSansCN-Regular.ttf"		[$JAPANESE]
 	"Default"					"resource/SourceHanSansCN-Regular.ttf"		[$TCHINESE]
 
-	"DefaultBold"				"resource/MetronicPro-SemiBold.vfont"	[!$JAPANESE && !$TCHINESE]
+	"DefaultBold"				"resource/SourceHanSansCN-Regular.ttf"		[!$JAPANESE && !$TCHINESE]
 	"DefaultBold"				"resource/SourceHanSansCN-Regular.ttf"		[$JAPANESE]
 	"DefaultBold"				"resource/SourceHanSansCN-Regular.ttf"		[$TCHINESE]
 
-	"Titanfall"					"resource/Titanfall-Regular.vfont"		[!$JAPANESE && !$TCHINESE && !$RUSSIAN]
+	"Titanfall"					"resource/SourceHanSansCN-Regular.ttf"		[!$JAPANESE && !$TCHINESE && !$RUSSIAN]
 	"Titanfall"					"resource/SourceHanSansCN-Regular.ttf"		[$JAPANESE]
 	"Titanfall"					"resource/SourceHanSansCN-Regular.ttf"		[$TCHINESE]
-	"Titanfall"					"resource/MetronicPro-SemiBold.vfont"	[$RUSSIAN]
+	"Titanfall"					"resource/SourceHanSansCN-Regular.ttf"		[$RUSSIAN]
 
 	"marlett"					"vgui/fonts/marlett.ttf"
 
@@ -19,22 +19,22 @@ FontFileTable
 
 	"arial unicode ms"			"resource/Lato-Regular.ttf"
 
-	"lucida console"			"resource/SourceHanMonoSC-Regular.otf"						[$PC]
-	"lucida console"			"resource/MetronicPro-Regular.vfont"	[$GAMECONSOLE]
+	"lucida console"			"resource/SourceHanMonoSC-Regular.otf"		[$PC]
+	"lucida console"			"resource/SourceHanMonoSC-Regular.otf"		[$GAMECONSOLE]
 
-	"tahoma"					"fonts\\tahoma.ttf"						[$PC]
-	"tahoma"					"resource/MetronicPro-Regular.vfont"  	[$GAMECONSOLE]
+	"tahoma"					"resource/SourceHanMonoSC-Regular.otf"		[$PC]
+	"tahoma"					"resource/SourceHanMonoSC-Regular.otf"  	[$GAMECONSOLE]
 
-	"tahoma bold"				"fonts\\tahomabd.ttf" 					[$PC]
-	"tahoma bold"				"resource/MetronicPro-SemiBold.vfont"  	[$GAMECONSOLE]
+	"tahoma bold"				"resource/SourceHanMonoSC-Regular.otf" 		[$PC]
+	"tahoma bold"				"resource/SourceHanMonoSC-Regular.otf"  	[$GAMECONSOLE]
 
-	"courier new"				"fonts\\cour.ttf"						[$PC]
-	"courier new"				"vgui/fonts/cour.ttf"					[$GAMECONSOLE]
+	"courier new"				"resource/SourceHanMonoSC-Regular.otf"		[$PC]
+	"courier new"				"resource/SourceHanMonoSC-Regular.otf"		[$GAMECONSOLE]
 
-	"times new roman"			"fonts\\times.ttf"						[$PC]
-	"times new roman"			"vgui/fonts/times.ttf" 					[$GAMECONSOLE]
+	"times new roman"			"resource/SourceHanMonoSC-Regular.otf"		[$PC]
+	"times new roman"			"resource/SourceHanMonoSC-Regular.otf" 		[$GAMECONSOLE]
 
-	"arial"						"resource/Lato-Regular.ttf"
-	"arial bold"				"resource/Lato-Regular.ttf"
-	"arial narrow"				"resource/Lato-Regular.ttf"
+	"arial"						"resource/SourceHanMonoSC-Regular.otf"
+	"arial bold"				"resource/SourceHanMonoSC-Regular.otf"
+	"arial narrow"				"resource/SourceHanMonoSC-Regular.otf"
 }
