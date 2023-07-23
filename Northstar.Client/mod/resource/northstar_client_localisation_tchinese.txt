@@ -280,6 +280,7 @@
 		"MAP_COLUMN" "地图"
 		"GAMEMODE_COLUMN" "游戏模式"
 		"LATENCY_COLUMN" "延迟"
+		"REGION_COLUMN" "地区" // NSCN只显示延迟(虽然并没有实际支持)
 		"GAMESTATE_COLUMN" "状态"
 		"REGION_COLUMN" "地区"
 		"SEARCHBAR_LABEL" "搜索："
