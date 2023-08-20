@@ -1,0 +1,11 @@
+global function Northstar_GameStateUpdate_Init
+
+void function Northstar_GameStateUpdate_Init()
+{
+    RegisterServerVarChangeCallback( "gameState", OnGameStateChanged )
+}
+
+void function OnGameStateChanged()
+{
+    NSUpdateSQGameState( GetGameState() )
+}

@@ -157,6 +157,13 @@
 			"ServerCallback": {
 				"After": "AiTurretSentry_Init"
 			}
+		},
+		{
+			"Path": "_northstar_gamestate_update.gnut",
+			"RunOn": "SERVER && MP",
+			"ServerCallback": {
+				"After": "Northstar_GameStateUpdate_Init"
+			}
 		}
 	]
 }
