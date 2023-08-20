@@ -1,0 +1,26 @@
+global function Sh_Northstar_MatchMaker_Init
+
+#if CLIENT
+global function ServerCallback_ClientBackToLobby
+#endif
+
+void function Sh_Northstar_MatchMaker_Init()
+{
+    AddCallback_OnRegisteringCustomNetworkVars( RegisterNorthstarMatchMakerNetworkFunctions )
+}
+
+void function RegisterNorthstarMatchMakerNetworkFunctions()
+{
+    Remote_RegisterFunction( "ServerCallback_ClientBackToLobby" )
+}
+
+#if CLIENT
+void function ServerCallback_ClientBackToLobby()
+{
+    entity player = GetLocalClientPlayer()
+    if ( IsValid( player ) )
+    {
+        player.ClientCommand( "ns_start_reauth_and_leave_to_lobby" )
+    }
+}
+#endif

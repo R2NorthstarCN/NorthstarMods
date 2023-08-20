@@ -11,3 +11,10 @@ bool function ShouldReturnToLobby()
 {	
 	return GetConVarBool( "ns_should_return_to_lobby" )
 }
+
+// whether the game should send other clients back to lobby on GameRules_EndMatch()
+// requires loading "sh_northstar_matchmaker.gnut"
+bool function ShouldSendClientsBackToLobby()
+{	
+	return GetConVarBool( "ns_send_clients_back_to_lobby_after_match" )
+}

@@ -443,6 +443,16 @@
 		{
 			"Path":  "sh_northstar_http_requests.gnut",
 			"RunOn": "CLIENT || SERVER || UI"
+		},
+		{
+			"Path":  "sh_northstar_matchmaker.gnut",
+			"RunOn": "CLIENT || SERVER",
+			"ClientCallback": {
+				"Before": "Sh_Northstar_MatchMaker_Init"
+			},
+			"ServerCallback": {
+				"Before": "Sh_Northstar_MatchMaker_Init"
+			}
 		}
 	],
 
