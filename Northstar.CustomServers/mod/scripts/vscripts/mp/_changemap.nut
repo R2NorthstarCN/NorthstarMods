@@ -12,6 +12,30 @@ void function CodeCallback_MatchIsOver()
 	PopulatePostgameData()
 	#endif
 
+	// nscn specific
+	float serverMapChangeDelay = 0.0 // default is no delay
+
+	if ( ShouldSendClientsBackToLobby() )
+	{
+		foreach ( entity player in GetPlayerArray() )
+		{
+			if ( !NSIsPlayerLocalPlayer( player ) )
+				Remote_CallFunction_NonReplay( player, "ServerCallback_ClientBackToLobby" )
+		}
+
+		serverMapChangeDelay = 5.0 // add 500ms grace period for clients to disconnect
+	}
+	
+	thread ChangeServerMapAfterDelay( serverMapChangeDelay )
+	//
+}
+
+
+void function ChangeServerMapAfterDelay( float delay = 0.0 )
+{
+	if ( delay > 0 )
+		wait delay
+
 	if ( ShouldReturnToLobby() )
 	{
 		SetCurrentPlaylist( "private_match" ) // needed for private lobby to load

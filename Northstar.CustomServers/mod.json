@@ -1,7 +1,7 @@
 {
 	"Name": "Northstar.CustomServers",
 	"Description": "Attempts to recreate the behaviour of vanilla Titanfall 2 servers, as well as changing some scripts to allow better support for mods",
-	"Version": "1.14.0",
+	"Version": "1.15.0",
 	"LoadPriority": 0,
 	"ConVars": [
 		{
@@ -52,6 +52,10 @@
 		},
 		{
 			"Name": "ns_allow_kill_commands",
+			"DefaultValue": "0"
+		},
+		{
+			"Name": "ns_send_clients_back_to_lobby_after_match",
 			"DefaultValue": "0"
 		}
 	],
@@ -156,6 +160,13 @@
 			"RunOn": "SERVER && MP",
 			"ServerCallback": {
 				"After": "AiTurretSentry_Init"
+			}
+		},
+		{
+			"Path": "_northstar_gamestate_update.gnut",
+			"RunOn": "SERVER && MP",
+			"ServerCallback": {
+				"After": "Northstar_GameStateUpdate_Init"
 			}
 		}
 	]
