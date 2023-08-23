@@ -4,9 +4,16 @@ global function Sh_Northstar_MatchMaker_Init
 global function ServerCallback_ClientBackToLobby
 #endif
 
+const float MATCH_OVER_GRACE_PERIOD = 10.0 // add 1000ms grace period for clients to disconnect
+
 void function Sh_Northstar_MatchMaker_Init()
 {
     AddCallback_OnRegisteringCustomNetworkVars( RegisterNorthstarMatchMakerNetworkFunctions )
+
+    // server's callbacks
+    #if SERVER
+        AddCallback_MatchIsOver( OnGameMatchOver )
+    #endif
 }
 
 void function RegisterNorthstarMatchMakerNetworkFunctions()
@@ -22,5 +29,37 @@ void function ServerCallback_ClientBackToLobby()
     {
         player.ClientCommand( "ns_start_reauth_and_leave_to_lobby" )
     }
+}
+#endif
+
+#if SERVER
+void function OnGameMatchOver( MatchOverStruct matchStruct )
+{
+    if ( ShouldSendClientsBackToLobby() )
+	{
+		foreach ( entity player in GetPlayerArray() )
+		{
+			if ( !NSIsPlayerLocalPlayer( player ) )
+				Remote_CallFunction_NonReplay( player, "ServerCallback_ClientBackToLobby" )
+		}
+
+        // we add delay before changing the map, so clients can receive remotecall
+        if ( matchStruct.mapChangeDelay < MATCH_OVER_GRACE_PERIOD )
+		    matchStruct.mapChangeDelay = MATCH_OVER_GRACE_PERIOD
+	}
+
+    if ( ShouldQuitServerAfterMatch() )
+    {
+        matchStruct.shouldChangeMap = false // never change map cause we're gonna quit the server
+        thread QuitServerAfterAllPlayersLeave()
+    }
+}
+
+void function QuitServerAfterAllPlayersLeave()
+{
+    while ( GetPlayerArray().len() != 0 )
+        WaitFrame()
+
+    ServerCommand( "quit" )
 }
 #endif

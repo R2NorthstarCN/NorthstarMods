@@ -1,5 +1,20 @@
 global function CodeCallback_MatchIsOver
 
+// modified to add: for handling match making system
+global struct MatchOverStruct
+{
+	bool shouldChangeMap = true
+	float mapChangeDelay = 0.0 // sets the delay before map change
+}
+
+global function AddCallback_MatchIsOver
+
+struct
+{
+	array<void functionref( MatchOverStruct matchStruct )> matchOverCallbacks
+} file
+//
+
 void function CodeCallback_MatchIsOver()
 {
 	if ( !IsPrivateMatch() && IsMatchmakingServer() )
@@ -7,26 +22,19 @@ void function CodeCallback_MatchIsOver()
 	else
 		SetUIVar( level, "putPlayerInMatchmakingAfterDelay", false )
 	
-	#if MP
+#if MP
 	AddCreditsForXPGained()
 	PopulatePostgameData()
-	#endif
+#endif
 
-	// nscn specific
-	float serverMapChangeDelay = 0.0 // default is no delay
-
-	if ( ShouldSendClientsBackToLobby() )
-	{
-		foreach ( entity player in GetPlayerArray() )
-		{
-			if ( !NSIsPlayerLocalPlayer( player ) )
-				Remote_CallFunction_NonReplay( player, "ServerCallback_ClientBackToLobby" )
-		}
-
-		serverMapChangeDelay = 5.0 // add 500ms grace period for clients to disconnect
-	}
+	// modified to add: for handling match making system
+	MatchOverStruct matchStruct
+	// Added via AddCallback_MatchIsOver()
+	foreach ( callbackFunc in file.matchOverCallbacks )
+		callbackFunc( matchStruct )
 	
-	thread ChangeServerMapAfterDelay( serverMapChangeDelay )
+	if ( matchStruct.shouldChangeMap )
+		thread ChangeServerMapAfterDelay( matchStruct.mapChangeDelay )
 	//
 }
 
@@ -150,3 +158,11 @@ void function PopulatePostgameData()
 	}
 }
 #endif
+
+// modified to add: for handling match making system
+void function AddCallback_MatchIsOver( void functionref( MatchOverStruct matchStruct ) callbackFunc )
+{
+	if ( !file.matchOverCallbacks.contains( callbackFunc ) )
+		file.matchOverCallbacks.append( callbackFunc )
+}
+//
