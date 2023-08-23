@@ -13,8 +13,24 @@ bool function ShouldReturnToLobby()
 }
 
 // whether the game should send other clients back to lobby on GameRules_EndMatch()
-// requires loading "sh_northstar_matchmaker.gnut"
+// basically for matchmaking
 bool function ShouldSendClientsBackToLobby()
 {	
 	return GetConVarBool( "ns_send_clients_back_to_lobby_after_match" )
+}
+
+// whether we should terminal the server( by sending command "quit" ) after a match ends
+// basically for matchmaking
+bool function ShouldQuitServerAfterMatch()
+{
+	// should never allow quiting the server if it's a listen server
+	#if SERVER
+		foreach ( entity player in GetPlayerArray() )
+		{
+			if ( NSIsPlayerLocalPlayer( player ) )
+				return false
+		}
+	#endif
+
+	return GetConVarBool( "ns_quit_server_after_match" )
 }
