@@ -1054,7 +1054,14 @@ void function UpdateMatchmakingStatus()
 					string etaStr = ""
 					if ( !etaSeconds && !isConnectingToMatch )
 					{
-						matchmakingStatus = "#MATCHMAKING_SEARCHING_FOR_MATCH"
+						if (matchmakingStatus == "#MATCHMAKING_ALLOCATING_SERVER")
+						{
+							MatchmakingSetSearchText("#MATCHMAKING_ALLOCATING_SERVER")
+						}
+						else
+						{
+							matchmakingStatus = "#MATCHMAKING_SEARCHING_FOR_MATCH"
+						}
 					}
 					else
 					{
