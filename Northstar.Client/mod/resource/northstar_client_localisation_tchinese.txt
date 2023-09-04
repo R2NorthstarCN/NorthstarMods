@@ -230,6 +230,7 @@
 		"classic_rodeo" "經典馴牛術"
 		"oob_timer_enabled" "出界計時器"
 		"riff_instagib" "瞬殺模式"
+		"player_force_respawn" "强制重生"
 
 		"riff_player_bleedout" "鐵馭倒地"
 		"player_bleedout_forceHolster" "倒地時收起武器"
@@ -353,5 +354,22 @@
 		"REPLACEMENT_WEAPON"             "替换的武器"
 		"WILL_RESET_ALL_SETTINGS"             "這將會重置所有屬於改條目的設置.\n\n此操作不可復原."
 		"NO_MODS"             "無可用模組! 前往 ^5588FF00northstar.thunderstore.io^0 下載更多."
+
+		// Toggleable progression
+		"TOGGLE_PROGRESSION"			"切換解鎖進度"
+		"Y_BUTTON_TOGGLE_PROGRESSION"	"%[Y_BUTTON]% 切換解鎖進度"
+
+		"PROGRESSION_TOGGLE_ENABLED_HEADER" "關閉解鎖進度？"
+		"PROGRESSION_TOGGLE_ENABLED_BODY" "泰坦、武器、陣營和戰鬥塗裝等物品將全部解鎖可用。\n\n這項設置可隨時在多人游戲大廳調整。"
+		"PROGRESSION_TOGGLE_DISABLED_HEADER" "開啓解鎖進度？"
+		"PROGRESSION_TOGGLE_DISABLED_BODY" "泰坦、武器、陣營和戰鬥塗裝等物品將需要升級、完成挑戰或透過點數購買來解鎖。\n\n這項設置可隨時在多人游戲大廳調整。\n\n^CC000000警告：如果目前你裝備有未解鎖的物品，它們將被重置！"
+
+		"PROGRESSION_ENABLED_HEADER"	"解鎖進度已開啓！"
+		"PROGRESSION_ENABLED_BODY"		"^CCCC0000解鎖進度目前已開啓。^\n\n泰坦、武器、陣營和戰鬥塗裝等物品將需要升級、完成挑戰或透過點數購買來解鎖。\n\n這項設置可隨時在多人游戲大廳調整。
+
+		"PROGRESSION_DISABLED_HEADER"	"解鎖進度已關閉！"
+		"PROGRESSION_DISABLED_BODY"		"^CCCC0000解鎖進度目前已關閉.^\n\n泰坦、武器、陣營和戰鬥塗裝等物品將全部解鎖可用。\n\n這項設置可隨時在多人游戲大廳調整。"
+	
+		"PROGRESSION_ANNOUNCEMENT_BODY"	"^CCCC0000解鎖進度現在可以開啓！^\n\n北極星加入了有關物品解鎖進度的支持，這意味著你可以選擇透過升級和完成挑戰去解鎖各類物品(泰坦、武器、陣營和戰鬥塗裝等)。\n\n你可以在多人游戲大廳底部打開解鎖進度。\n\n這項設置隨時都可以變更。"
 	}
 }
