@@ -61,6 +61,11 @@
 		{
 			"Name": "ns_quit_server_after_match",
 			"DefaultValue": "0"
+		},
+		{
+			"Name": "ns_progression_enabled",
+				"DefaultValue": "0",
+				"Flags": "ARCHIVE_PLAYERPROFILE"
 		}
 	],
 	"Scripts": [
@@ -171,6 +176,19 @@
 			"RunOn": "SERVER && MP",
 			"ServerCallback": {
 				"After": "Northstar_GameStateUpdate_Init"
+			}
+		},
+		{
+			"Path": "sh_progression.nut",
+				"RunOn": "UI || SERVER || CLIENT",
+				"ServerCallback": {
+					"Before": "Progression_Init"
+				},
+				"ClientCallback": {
+					"Before": "Progression_Init"
+				},
+				"UICallback": {
+					"Before": "Progression_Init"
 			}
 		}
 	]
