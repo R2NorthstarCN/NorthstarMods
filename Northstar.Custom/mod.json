@@ -27,6 +27,11 @@
 		{
 			"Name": "ns_force_melee",
 			"DefaultValue": ""
+		},
+		{
+			"Name": "ns_progression_enabled",
+				"DefaultValue": "0",
+				"Flags": "ARCHIVE_PLAYERPROFILE"
 		}
 	],
 	"Scripts": [
@@ -452,6 +457,19 @@
 			},
 			"ServerCallback": {
 				"Before": "Sh_Northstar_MatchMaker_Init"
+			}
+		},
+		{
+			"Path": "sh_progression.nut",
+				"RunOn": "UI || SERVER || CLIENT",
+				"ServerCallback": {
+					"Before": "Progression_Init"
+				},
+				"ClientCallback": {
+					"Before": "Progression_Init"
+				},
+				"UICallback": {
+					"Before": "Progression_Init"
 			}
 		}
 	],
