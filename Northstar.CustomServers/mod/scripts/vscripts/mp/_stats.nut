@@ -210,8 +210,12 @@ void function Stats_OnPlayerDidDamage( entity victim, var damageInfo )
 	// try and get the player
 	entity attacker = DamageInfo_GetAttacker( damageInfo )
 	// get the player from their titan
-	if ( attacker.IsTitan() && IsPetTitan( attacker ) )
-		attacker = attacker.GetTitanSoul().GetBossPlayer()
+	if ( attacker.IsNPC() && attacker.IsTitan() )
+	{
+		entity soul = attacker.GetTitanSoul()
+		if ( IsValid( soul ) && IsPetTitan( attacker ) ) // northstar missing: soul validation before using IsPetTitan()
+			attacker = GetPetTitanOwner( attacker )
+	}
 
 	if ( !attacker.IsPlayer() )
 		return
@@ -418,13 +422,21 @@ void function HandleWeaponKillStats( entity victim, entity attacker, var damageI
 		player = attacker
 		playerPetTitan = player.GetPetTitan()
 	}
-	else if ( attacker.IsTitan() && IsPetTitan( attacker ) )
+	// we can't find player, try to find from titan attacker
+	else if ( attacker.IsNPC() && attacker.IsTitan() )
 	{
-		// the attacker is the player's auto titan
-		player = attacker.GetTitanSoul().GetBossPlayer()
-		playerPetTitan = attacker
+		// get the player from their titan
+		entity soul = attacker.GetTitanSoul()
+		if ( IsValid( soul ) && IsPetTitan( attacker ) ) // northstar missing: soul validation before using IsPetTitan()
+		{
+			// the attacker is the player's auto titan
+			player = GetPetTitanOwner( attacker )
+			playerPetTitan = attacker
+		}
 	}
-	else
+
+	// if we still can't find player, just return
+	if ( !IsValid( player ) )
 	{
 		// attacker could be something like an NPC, or worldspawn
 		return
@@ -486,6 +498,7 @@ void function HandleKillStats( entity victim, entity attacker, var damageInfo )
 {
 	if ( !IsValid( attacker ) )
 		return
+	
 	// get the player and it's pet titan
 	entity player
 	entity playerPetTitan
@@ -495,13 +508,21 @@ void function HandleKillStats( entity victim, entity attacker, var damageInfo )
 		player = attacker
 		playerPetTitan = player.GetPetTitan()
 	}
-	else if ( attacker.IsTitan() && IsPetTitan( attacker ) )
+	// we can't find player, try to find from titan attacker
+	else if ( attacker.IsNPC() && attacker.IsTitan() )
 	{
-		// the attacker is the player's auto titan
-		player = attacker.GetTitanSoul().GetBossPlayer()
-		playerPetTitan = attacker
+		// get the player from their titan
+		entity soul = attacker.GetTitanSoul()
+		if ( IsValid( soul ) && IsPetTitan( attacker ) ) // northstar missing: soul validation before using IsPetTitan()
+		{
+			// the attacker is the player's auto titan
+			player = GetPetTitanOwner( attacker )
+			playerPetTitan = attacker
+		}
 	}
-	else
+
+	// if we still can't find player, just return
+	if ( !IsValid( player ) )
 	{
 		// attacker could be something like an NPC, or worldspawn
 		return
@@ -753,13 +774,21 @@ void function HandleTitanStats( entity victim, entity attacker, var damageInfo )
 		player = attacker
 		playerPetTitan = player.GetPetTitan()
 	}
-	else if ( attacker.IsTitan() && IsPetTitan( attacker ) )
+	// we can't find player, try to find from titan attacker
+	else if ( attacker.IsNPC() && attacker.IsTitan() )
 	{
-		// the attacker is the player's auto titan
-		player = attacker.GetTitanSoul().GetBossPlayer()
-		playerPetTitan = attacker
+		// get the player from their titan
+		entity soul = attacker.GetTitanSoul()
+		if ( IsValid( soul ) && IsPetTitan( attacker ) ) // northstar missing: soul validation before using IsPetTitan()
+		{
+			// the attacker is the player's auto titan
+			player = GetPetTitanOwner( attacker )
+			playerPetTitan = attacker
+		}
 	}
-	else
+
+	// if we still can't find player, just return
+	if ( !IsValid( player ) )
 	{
 		// attacker could be something like an NPC, or worldspawn
 		return
