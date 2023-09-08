@@ -710,13 +710,17 @@ void function HandleKillStats( entity victim, entity attacker, var damageInfo )
 	if ( damageSource == eDamageSourceId.damagedef_titan_fall )
 		Stats_IncrementStat( player, "kills_stats", "titanFallKill", "", 1.0 )
 
-	// petTitanKillsFollowMode
-	if ( attacker == playerPetTitan && player.GetPetTitanMode() == eNPCTitanMode.FOLLOW )
-		Stats_IncrementStat( player, "kills_stats", "petTitanKillsFollowMode", "", 1.0 )
+	// pet titan kills
+	if ( IsValid( playerPetTitan ) )
+	{
+		// petTitanKillsFollowMode
+		if ( attacker == playerPetTitan && player.GetPetTitanMode() == eNPCTitanMode.FOLLOW )
+			Stats_IncrementStat( player, "kills_stats", "petTitanKillsFollowMode", "", 1.0 )
 
-	// petTitanKillsGuardMode
-	if ( attacker == playerPetTitan && player.GetPetTitanMode() == eNPCTitanMode.STAY )
-		Stats_IncrementStat( player, "kills_stats", "petTitanKillsGuardMode", "", 1.0 )
+		// petTitanKillsGuardMode
+		if ( attacker == playerPetTitan && player.GetPetTitanMode() == eNPCTitanMode.STAY )
+			Stats_IncrementStat( player, "kills_stats", "petTitanKillsGuardMode", "", 1.0 )
+	}
 
 	// rodeo_total
 	if ( damageSource == eDamageSourceId.rodeo_battery_removal )
