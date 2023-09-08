@@ -209,6 +209,9 @@ void function Stats_OnPlayerDidDamage( entity victim, var damageInfo )
 {
 	// try and get the player
 	entity attacker = DamageInfo_GetAttacker( damageInfo )
+	if ( !IsValid( attacker ) )
+		return
+	
 	// get the player from their titan
 	if ( attacker.IsNPC() && attacker.IsTitan() )
 	{
