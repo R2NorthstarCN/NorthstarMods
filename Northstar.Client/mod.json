@@ -90,10 +90,6 @@
 			}
 		},
 		{
-			"Path": "ui/menu_ns_moddownload.nut",
-			"RunOn": "UI"
-		},
-		{
 			"Path": "ui/menu_ns_serverbrowser.nut",
 			"RunOn": "UI",
 			"UICallback": {
@@ -139,13 +135,6 @@
     	{
 			"Path": "ui/ui_mouse_capture.nut",
 			"RunOn": "UI"
-		},
-		{
-			"Path": "ui/atlas_auth.nut",
-			"RunOn": "UI",
-			"UICallback": {
-				"After": "AtlasAuthDialog"
-			}
 		}
 	],
 	"Localisation": [
