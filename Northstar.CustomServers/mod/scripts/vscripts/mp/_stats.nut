@@ -341,6 +341,10 @@ void function OnPlayerOrNPCKilled( entity victim, entity attacker, var damageInf
 		thread SetLastPosForDistanceStatValid_Threaded( victim, false )
 
 	HandleDeathStats( victim, attacker, damageInfo )
+	
+	if( victim == attacker ) //Suicides are registering stats, afaik vanilla ignores them
+		return
+	
 	HandleKillStats( victim, attacker, damageInfo )
 	HandleWeaponKillStats( victim, attacker, damageInfo )
 	HandleTitanStats( victim, attacker, damageInfo )
@@ -505,11 +509,15 @@ void function HandleKillStats( entity victim, entity attacker, var damageInfo )
 	// get the player and it's pet titan
 	entity player
 	entity playerPetTitan
-	if ( attacker.IsPlayer() )
+	entity inflictor = DamageInfo_GetInflictor( damageInfo )
+	
+	if ( IsValid( inflictor ) )
 	{
-		// the player is just the attacker
-		player = attacker
-		playerPetTitan = player.GetPetTitan()
+		if ( inflictor.IsProjectile() && IsValid( inflictor.GetOwner() ) ) // Attackers are always the final entity in the owning hierarchy, projectile owners though migh be a player's NPC minion (i.e Auto-Titans)
+			attacker = inflictor.GetOwner()
+		
+		else if ( inflictor.IsNPC() ) // NPCs are bypassed as Attackers if they are owned by players, instead they become just inflictors
+			attacker = inflictor
 	}
 	// we can't find player, try to find from titan attacker
 	else if ( attacker.IsNPC() && attacker.IsTitan() )
@@ -525,7 +533,7 @@ void function HandleKillStats( entity victim, entity attacker, var damageInfo )
 	}
 
 	// if we still can't find player, just return
-	if ( !IsValid( player ) )
+	if ( !IsValid( player ) || !player.IsPlayer() )
 	{
 		// attacker could be something like an NPC, or worldspawn
 		return
