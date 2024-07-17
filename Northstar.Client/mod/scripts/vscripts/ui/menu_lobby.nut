@@ -290,23 +290,11 @@ void function SetupComboButtonTest( var menu )
 	int buttonIndex = 0
 	file.playHeader = AddComboButtonHeader( comboStruct, headerIndex, "#MENU_HEADER_PLAY" )
 	
-	bool isModded = IsNorthstarServer()
-	
-	
-	// this will be the server browser
-	if ( isModded )
-	{
-		file.findGameButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_SERVER_BROWSER" )
-		file.lobbyButtons.append( file.findGameButton )
-		Hud_SetLocked( file.findGameButton, true )
-		Hud_AddEventHandler( file.findGameButton, UIE_CLICK, OpenServerBrowser )
-	}
-	else
-	{
-		file.findGameButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_FIND_GAME" )
-		file.lobbyButtons.append( file.findGameButton )
-		Hud_AddEventHandler( file.findGameButton, UIE_CLICK, BigPlayButton1_Activate )
-	}
+	// server browser
+	file.findGameButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_SERVER_BROWSER" )
+	file.lobbyButtons.append( file.findGameButton )
+	Hud_SetLocked( file.findGameButton, true )
+	Hud_AddEventHandler( file.findGameButton, UIE_CLICK, OpenServerBrowser )
 
 	// this is used for launching private matches now
 	if ( isModded )

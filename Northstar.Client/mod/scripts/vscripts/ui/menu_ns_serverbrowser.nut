@@ -998,6 +998,11 @@ string function FillInServerModsLabel( int server )
 
 void function OnServerSelected( var button )
 {
+	thread OnServerSelected_Threaded( button )
+}
+
+void function OnServerSelected_Threaded( var button )
+{
 	if ( NSIsRequestingServerList() || NSGetServerCount() == 0 || file.serverListRequestFailed )
 		return
 
@@ -1015,16 +1020,28 @@ void function OnServerSelected( var button )
 			dialogData.message = "Missing mod \"" + NSGetServerRequiredModName( serverIndex, i ) + "\" v" + NSGetServerRequiredModVersion( serverIndex, i )
 			dialogData.image = $"ui/menu/common/dialog_error"
 
-			#if PC_PROG
 				AddDialogButton( dialogData, "#DISMISS" )
 
 				AddDialogFooter( dialogData, "#A_BUTTON_SELECT" )
-			#endif // PC_PROG
-			AddDialogFooter( dialogData, "#B_BUTTON_DISMISS_RUI" )
+				AddDialogFooter( dialogData, "#B_BUTTON_DISMISS_RUI" )
 
-			OpenDialog( dialogData )
+				OpenDialog( dialogData )
 
-			return
+				return
+			}
+
+			else // Launch download
+			{
+				if ( DownloadMod( mod ) )
+				{
+					downloadedMods++
+				}
+				else
+				{
+					DisplayModDownloadErrorDialog( mod.name )
+					return
+				}
+			}
 		}
 		else
 		{
@@ -1075,7 +1092,7 @@ void function OnServerSelected( var button )
 }
 
 
-void function ThreadedAuthAndConnectToServer( string password = "" )
+void function ThreadedAuthAndConnectToServer( string password = "", bool modsChanged = false )
 {
 	if ( NSIsAuthenticatingWithServer() )
 		return
