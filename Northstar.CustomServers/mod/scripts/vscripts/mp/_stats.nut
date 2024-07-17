@@ -518,26 +518,26 @@ void function HandleKillStats( entity victim, entity attacker, var damageInfo )
 		
 		else if ( inflictor.IsNPC() ) // NPCs are bypassed as Attackers if they are owned by players, instead they become just inflictors
 			attacker = inflictor
-	}
-	// we can't find player, try to find from titan attacker
-	else if ( attacker.IsNPC() && attacker.IsTitan() )
-	{
-		// get the player from their titan
-		entity soul = attacker.GetTitanSoul()
-		if ( IsValid( soul ) && IsPetTitan( attacker ) ) // northstar missing: soul validation before using IsPetTitan()
-		{
-			// the attacker is the player's auto titan
-			player = GetPetTitanOwner( attacker )
-			playerPetTitan = attacker
-		}
-	}
 
-	// if we still can't find player, just return
-	if ( !IsValid( player ) || !player.IsPlayer() )
-	{
-		// attacker could be something like an NPC, or worldspawn
-		return
+		// some quick note: projectile damage which fired by npc who are already dead will pass an projectile entity inside here
 	}
+	
+	if ( attacker.IsNPC() )
+	{
+		if ( !attacker.IsTitan() ) // Normal NPCs case
+			return
+		
+		entity soul = attacker.GetTitanSoul()
+		if ( !IsValid( soul ) || !IsPetTitan( attacker ) ) // NPC Titans case
+			return
+		
+		player = attacker.GetTitanSoul().GetBossPlayer()
+		playerPetTitan = attacker
+	}
+	else if ( attacker.IsPlayer() ) // Still checks this because worldspawn might be the attacker
+		player = attacker
+	else
+		return
 
 	// check things once, for performance
 	int damageSource = DamageInfo_GetDamageSourceIdentifier( damageInfo )
