@@ -998,11 +998,6 @@ string function FillInServerModsLabel( int server )
 
 void function OnServerSelected( var button )
 {
-	thread OnServerSelected_Threaded( button )
-}
-
-void function OnServerSelected_Threaded( var button )
-{
 	if ( NSIsRequestingServerList() || NSGetServerCount() == 0 || file.serverListRequestFailed )
 		return
 
@@ -1020,28 +1015,16 @@ void function OnServerSelected_Threaded( var button )
 			dialogData.message = "Missing mod \"" + NSGetServerRequiredModName( serverIndex, i ) + "\" v" + NSGetServerRequiredModVersion( serverIndex, i )
 			dialogData.image = $"ui/menu/common/dialog_error"
 
+			#if PC_PROG
 				AddDialogButton( dialogData, "#DISMISS" )
 
 				AddDialogFooter( dialogData, "#A_BUTTON_SELECT" )
-				AddDialogFooter( dialogData, "#B_BUTTON_DISMISS_RUI" )
+			#endif // PC_PROG
+			AddDialogFooter( dialogData, "#B_BUTTON_DISMISS_RUI" )
 
-				OpenDialog( dialogData )
+			OpenDialog( dialogData )
 
-				return
-			}
-
-			else // Launch download
-			{
-				if ( DownloadMod( mod ) )
-				{
-					downloadedMods++
-				}
-				else
-				{
-					DisplayModDownloadErrorDialog( mod.name )
-					return
-				}
-			}
+			return
 		}
 		else
 		{
@@ -1092,7 +1075,7 @@ void function OnServerSelected_Threaded( var button )
 }
 
 
-void function ThreadedAuthAndConnectToServer( string password = "", bool modsChanged = false )
+void function ThreadedAuthAndConnectToServer( string password = "" )
 {
 	if ( NSIsAuthenticatingWithServer() )
 		return
@@ -1190,17 +1173,6 @@ int function ServerSortLogic ( serverStruct a, serverStruct b )
 		case sortingBy.DEFAULT:
 			aTemp = a.serverPlayers
 			bTemp = b.serverPlayers
-
-			// `1000` is assumed to always be higher than `serverPlayersMax`
-			if (aTemp + 1 < a.serverPlayersMax)
-				aTemp = aTemp+2000
-			if (bTemp + 1 < b.serverPlayersMax)
-				bTemp = bTemp+2000
-			if (aTemp + 1 == a.serverPlayersMax)
-				aTemp = aTemp+1000
-			if (bTemp + 1 == b.serverPlayersMax)
-				bTemp = bTemp+1000
-
 			direction = filterDirection.serverName
 			break;
 		case sortingBy.NAME:

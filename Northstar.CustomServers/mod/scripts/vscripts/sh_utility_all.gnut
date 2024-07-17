@@ -394,12 +394,8 @@ float function RoundToNearestMultiplier( float value, float multiplier )
 	return value
 }
 
-function DevEverythingUnlocked( entity player = null )
+function DevEverythingUnlocked()
 {
-	// check if player has opted into progression or not
-	if ( player != null && ProgressionEnabledForPlayer( player ) )
-		return false
-
 	return EverythingUnlockedConVarEnabled()
 }
 

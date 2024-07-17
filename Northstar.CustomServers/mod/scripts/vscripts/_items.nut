@@ -5698,7 +5698,7 @@ bool function IsUnlockValid( string ref, string parentRef = "" )
 
 bool function IsSubItemLocked( entity player, string ref, string parentRef )
 {
-	if ( DevEverythingUnlocked( player ) )
+	if ( DevEverythingUnlocked() )
 		return false
 	
 	if ( IsItemPurchasableEntitlement( ref, parentRef ) )
@@ -5823,7 +5823,7 @@ bool function IsSubItemLocked( entity player, string ref, string parentRef )
 
 bool function IsItemLocked( entity player, string ref )
 {
-	if ( DevEverythingUnlocked( player ) )
+	if ( DevEverythingUnlocked() )
 		return false
 	
 	if ( IsItemPurchasableEntitlement( ref ) )
@@ -5918,7 +5918,7 @@ bool function IsItemLockedForEntitlement( entity player, string ref, string pare
 
 bool function IsSubItemOwned( entity player, string ref, string parentRef )
 {
-	if ( DevEverythingUnlocked( player ) )
+	if ( DevEverythingUnlocked() )
 		return false
 
 	Assert( IsValid( player ) )
@@ -6002,7 +6002,7 @@ bool function IsSubItemOwned( entity player, string ref, string parentRef )
 
 bool function IsItemOwned( entity player, string ref )
 {
-	if ( DevEverythingUnlocked( player ) )
+	if ( DevEverythingUnlocked() )
 		return false
 
 	Assert( IsValid( player ) )
@@ -10229,10 +10229,6 @@ void function StatUnlock_Unlocked( entity player, string itemRef, string parentR
 {
 	// early out if we've already marked this as new
 	if ( IsItemNew( player, itemRef, parentRef ) )
-		return
-
-	// early out if the player has progression disabled
-	if ( !ProgressionEnabledForPlayer( player ) )
 		return
 
 	int refGuid = file.itemRefToGuid[itemRef]

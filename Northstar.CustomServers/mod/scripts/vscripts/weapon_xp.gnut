@@ -19,9 +19,8 @@ void function AddWeaponXP( entity player, int amount )
 		AddPlayerScore( player, "WeaponLevelUp" )
 		IncrementPlayerChallengeWeaponLeveledUp( player )
 		player.SetPersistentVar( "xp_match[" + XP_TYPE.WEAPON_LEVELED + "]", WeaponXPMatch + 1 )
-		
-		if( ProgressionEnabledForPlayer( player ) )
-			AwardRandomItemsForWeaponLevels( player, weaponClassname, oldLevel, WeaponGetLevel( player, weaponClassname ) )
+
+		AwardRandomItemsForWeaponLevels( player, weaponClassname, oldLevel, WeaponGetLevel( player, weaponClassname ) )
 	}
 
 	// proscreen 
