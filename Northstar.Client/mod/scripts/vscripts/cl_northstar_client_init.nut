@@ -43,7 +43,7 @@ global struct ServerInfo
     int playerCount
     int maxPlayerCount
     bool requiresPassword
-    string region
+    string gamestate
     array< RequiredModInfo > requiredMods
 }
 

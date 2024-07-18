@@ -3,6 +3,7 @@
 	"Description": "Various ui and client changes to fix bugs and add better support for mods",
 	"Version": "1.19.0",
 	"LoadPriority": 0,
+	"InitScript": "cl_northstar_client_init.nut",
 	"ConVars": [
 		{
 			"Name": "allow_mod_auto_download",
@@ -52,10 +53,11 @@
 			"Path": "_custom_codecallbacks_client.gnut",
 			"RunOn": "CLIENT"
 		},
-		{
-			"Path": "ui/menu_custom_clantag.nut",
-			"RunOn": "UI"
-		},
+		// temporary comment out because current build don't have API yet
+		//{
+		//	"Path": "ui/menu_custom_clantag.nut",
+		//	"RunOn": "UI"
+		//},
 		{
 			"Path": "client/cl_chat.gnut",
 			"RunOn": "CLIENT"
@@ -76,18 +78,8 @@
 			}
 		},
 		{
-			"Path": "presence/ui_presence.nut",
-			"RunOn": "UI",
-			"UICallback": {
-				"After": "NSUpdateGameStateUIStart"
-			}
-		},
-		{
-			"Path": "presence/cl_presence.nut",
-			"RunOn": "CLIENT",
-			"ClientCallback": {
-				"After": "NSUpdateGameStateClientStart"
-			}
+			"Path": "ui/menu_ns_moddownload.nut",
+			"RunOn": "UI"
 		},
 		{
 			"Path": "ui/menu_ns_serverbrowser.nut",
