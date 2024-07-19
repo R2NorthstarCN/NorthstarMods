@@ -48,6 +48,9 @@ global const ARC_CANNON_BOLT_WIDTH_NPC				= 8			// Bolt width when used by NPC
 global const ARC_CANNON_BEAM_COLOR					= "150 190 255"
 global const ARC_CANNON_BEAM_LIFETIME				= 0.75
 
+// modified: Sound settings
+global const ARC_CANNON_CHARGED_FIRING_SOUND_FRAC 		= 0.65 // if charge frac is higher than this, we do an extra firing sound
+
 // Player Effects
 global const ARC_CANNON_TITAN_SCREEN_SFX 		= "Null_Remove_SoundHook"
 global const ARC_CANNON_PILOT_SCREEN_SFX 		= "Null_Remove_SoundHook"
@@ -78,6 +81,7 @@ global const SPLITTER_FORK_COUNT_MAX				= 10
 
 global const ARC_CANNON_SIGNAL_DEACTIVATED	= "ArcCannonDeactivated"
 global const ARC_CANNON_SIGNAL_CHARGEEND = "ArcCannonChargeEnd"
+global const ARC_CANNON_SIGNAL_FIREWEAPON = "ArcCannonFireWeapon"
 
 global const ARC_CANNON_BEAM_EFFECT = $"wpn_arc_cannon_beam"
 global const ARC_CANNON_BEAM_EFFECT_MOD = $"wpn_arc_cannon_beam_mod"
@@ -120,6 +124,8 @@ function ArcCannon_Init()
 {
 	RegisterSignal( ARC_CANNON_SIGNAL_DEACTIVATED )
 	RegisterSignal( ARC_CANNON_SIGNAL_CHARGEEND )
+	RegisterSignal( ARC_CANNON_SIGNAL_FIREWEAPON )
+
 	PrecacheParticleSystem( ARC_CANNON_BEAM_EFFECT )
 	PrecacheParticleSystem( ARC_CANNON_BEAM_EFFECT_MOD )
 	PrecacheImpactEffectTable( ARC_CANNON_FX_TABLE )
@@ -190,6 +196,18 @@ function ArcCannon_ChargeBegin( entity weapon )
 
 	// effect handle
 	weapon.PlayWeaponEffect( $"wpn_arc_cannon_charge_fp", $"wpn_arc_cannon_charge", "muzzle_flash" )
+}
+
+void function TrackArcCannonChargeEffect( entity weapon, entity weaponOwner )
+{
+	weapon.EndSignal( "OnDestroy" )
+	weapon.EndSignal( ARC_CANNON_SIGNAL_DEACTIVATED )
+	weapon.EndSignal( ARC_CANNON_SIGNAL_CHARGEEND )
+	weapon.EndSignal( ARC_CANNON_SIGNAL_FIREWEAPON )
+
+	WaitSignal( weaponOwner, "OnDeath", "OnDestroy" )
+
+	weapon.StopWeaponEffect( $"wpn_arc_cannon_charge_fp", $"wpn_arc_cannon_charge" )
 }
 
 function ArcCannon_ChargeEnd( entity weapon, entity player = null )
@@ -272,8 +290,12 @@ function FireArcCannon( entity weapon, WeaponPrimaryAttackParams attackParams )
 	// Northstar missing: fix sound!!!
 	weapon.EmitWeaponSound_1p3p( "weapon_electric_smoke_electrocute_titan_1p", "weapon_electric_smoke_electrocute_titan_3p")
 	weapon.EmitWeaponSound_1p3p( "weapon_batterygun_firestart_1p", "weapon_batterygun_fire_energydrained_3p")
-	if ( charge >= ARC_CANNON_DAMAGE_CHARGE_RATIO ) // firing with high charge frac, do a extra sound
+	if ( charge >= ARC_CANNON_CHARGED_FIRING_SOUND_FRAC ) // firing with high charge frac, do a extra sound
 		weapon.EmitWeaponSound_1p3p( "MegaTurret_Laser_Fire_3P", "MegaTurret_Laser_Fire_3P")
+
+	// effect handle
+	weapon.Signal( ARC_CANNON_SIGNAL_FIREWEAPON )
+	weapon.StopWeaponEffect( $"wpn_arc_cannon_charge_fp", $"wpn_arc_cannon_charge" )
 
 	local attachmentName = "muzzle_flash"
 	local attachmentIndex = weapon.LookupAttachment( attachmentName )
