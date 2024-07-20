@@ -36,7 +36,7 @@ void function Stats_Init()
 	AddCallback_OnPlayerRespawned( OnPlayerRespawned )
 	AddCallback_OnClientConnected( OnClientConnected )
 	AddCallback_OnClientDisconnected( OnClientDisconnected )
-	AddCallback_GameStateEnter( eGameState.Epilogue, OnEpilogueStarted )
+	AddCallback_GameStateEnter( eGameState.WinnerDetermined, OnWinnerDetermined )
 
 	thread HandleDistanceAndTimeStats_Threaded()
 	thread SaveStatsPeriodically_Threaded()
@@ -136,12 +136,12 @@ float function PlayerStat_GetCurrentFloat( entity player, string statCategory, s
 	return 0
 }
 
-void function UpdatePlayerStat( entity player, string statCategory, string subStat, int count = 1 )
+void function UpdatePlayerStat( entity player, string statCategory, string subStat, int count = 1, string statAlias = "" )
 {
 	if ( !IsValid( player ) )
 		return
 
-	Stats_IncrementStat( player, statCategory, subStat, "", count.tofloat() )
+	Stats_IncrementStat( player, statCategory, subStat, statAlias, count.tofloat() )
 }
 
 void function IncrementPlayerDidPilotExecutionWhileCloaked( entity player )
@@ -271,7 +271,7 @@ void function Stats_IncrementStat( entity player, string statCategory, string st
 		// persistence string, we can't save the persistence so we have to just return
 		if ( str != saveVar )
 		{
-			printt( ex )
+			//printt( ex, str, GetMapName(), mode ) // Commented out due to spamming logs on invalid modes (e.g. Gun Game, Infection, ...)
 			return
 		}
 	}
@@ -341,6 +341,10 @@ void function OnPlayerOrNPCKilled( entity victim, entity attacker, var damageInf
 		thread SetLastPosForDistanceStatValid_Threaded( victim, false )
 
 	HandleDeathStats( victim, attacker, damageInfo )
+	
+	if( victim == attacker ) //Suicides are registering stats, afaik vanilla ignores them
+		return
+	
 	HandleKillStats( victim, attacker, damageInfo )
 	HandleWeaponKillStats( victim, attacker, damageInfo )
 	HandleTitanStats( victim, attacker, damageInfo )
@@ -505,31 +509,35 @@ void function HandleKillStats( entity victim, entity attacker, var damageInfo )
 	// get the player and it's pet titan
 	entity player
 	entity playerPetTitan
-	if ( attacker.IsPlayer() )
+	entity inflictor = DamageInfo_GetInflictor( damageInfo )
+	
+	if ( IsValid( inflictor ) )
 	{
-		// the player is just the attacker
-		player = attacker
-		playerPetTitan = player.GetPetTitan()
-	}
-	// we can't find player, try to find from titan attacker
-	else if ( attacker.IsNPC() && attacker.IsTitan() )
-	{
-		// get the player from their titan
-		entity soul = attacker.GetTitanSoul()
-		if ( IsValid( soul ) && IsPetTitan( attacker ) ) // northstar missing: soul validation before using IsPetTitan()
-		{
-			// the attacker is the player's auto titan
-			player = GetPetTitanOwner( attacker )
-			playerPetTitan = attacker
-		}
-	}
+		if ( inflictor.IsProjectile() && IsValid( inflictor.GetOwner() ) ) // Attackers are always the final entity in the owning hierarchy, projectile owners though migh be a player's NPC minion (i.e Auto-Titans)
+			attacker = inflictor.GetOwner()
+		
+		else if ( inflictor.IsNPC() ) // NPCs are bypassed as Attackers if they are owned by players, instead they become just inflictors
+			attacker = inflictor
 
-	// if we still can't find player, just return
-	if ( !IsValid( player ) )
-	{
-		// attacker could be something like an NPC, or worldspawn
-		return
+		// some quick note: projectile damage which fired by npc who are already dead will pass an projectile entity inside here
 	}
+	
+	if ( attacker.IsNPC() )
+	{
+		if ( !attacker.IsTitan() ) // Normal NPCs case
+			return
+		
+		entity soul = attacker.GetTitanSoul()
+		if ( !IsValid( soul ) || !IsPetTitan( attacker ) ) // NPC Titans case
+			return
+		
+		player = attacker.GetTitanSoul().GetBossPlayer()
+		playerPetTitan = attacker
+	}
+	else if ( attacker.IsPlayer() ) // Still checks this because worldspawn might be the attacker
+		player = attacker
+	else
+		return
 
 	// check things once, for performance
 	int damageSource = DamageInfo_GetDamageSourceIdentifier( damageInfo )
@@ -595,9 +603,11 @@ void function HandleKillStats( entity victim, entity attacker, var damageInfo )
 	// assistsTotal ( weapon_kill_stats )
 	// note: eww
 	table<int, bool> alreadyAssisted
-	foreach( DamageHistoryStruct attackerInfo in victim.e.recentDamageHistory )
+	// titans store their recentDamageHistory in the soul
+	entity assistVictim = ( victim.IsTitan() && IsValid( victim.GetTitanSoul() ) ) ? victim.GetTitanSoul() : victim 
+	foreach( DamageHistoryStruct attackerInfo in assistVictim.e.recentDamageHistory )
 	{
-		if ( !IsValid( attackerInfo.attacker ) || !attackerInfo.attacker.IsPlayer() || attackerInfo.attacker == victim )
+		if ( !IsValid( attackerInfo.attacker ) || !attackerInfo.attacker.IsPlayer() || attackerInfo.attacker == assistVictim )
 			continue
 
 		bool exists = attackerInfo.attacker.GetEncodedEHandle() in alreadyAssisted ? true : false
@@ -609,7 +619,7 @@ void function HandleKillStats( entity victim, entity attacker, var damageInfo )
 			string source = DamageSourceIDToString( attackerInfo.damageSourceId )
 
 			if ( IsValidStatItemString( source ) )
-				Stats_IncrementStat( attacker, "weapon_kill_stats", "assistsTotal", source, 1.0 )
+				Stats_IncrementStat( attackerInfo.attacker, "weapon_kill_stats", "assistsTotal", source, 1.0 )
 		}
 	}
 
@@ -834,7 +844,7 @@ void function OnPlayerRespawned( entity player )
 	thread SetLastPosForDistanceStatValid_Threaded( player, true )
 }
 
-void function OnEpilogueStarted()
+void function OnWinnerDetermined()
 {
 	// award players for match completed, wins, and losses
 	foreach ( entity player in GetPlayerArray() )
@@ -965,6 +975,9 @@ void function HandleDistanceAndTimeStats_Threaded()
 		// track distance stats
 		foreach ( entity player in GetPlayerArray() )
 		{
+			if ( !IsValid( player ) )
+				continue
+				
 			if ( player.p.lastPosForDistanceStatValid )
 			{
 				// not 100% sure on using Distance2D over Distance tbh
@@ -1069,7 +1082,10 @@ void function SaveStatsPeriodically_Threaded()
 	while( true )
 	{
 		foreach( entity player in GetPlayerArray() )
-			Stats_SaveAllStats( player )
+		{
+			if ( IsValid( player ) )
+				Stats_SaveAllStats( player )
+		}
 		wait 5
 	}
 }

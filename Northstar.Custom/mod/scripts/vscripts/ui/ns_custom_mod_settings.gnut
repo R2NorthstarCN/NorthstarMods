@@ -1,0 +1,13 @@
+global function NSCustomModSettings
+
+void function NSCustomModSettings()
+{
+	// no settings available yet, temp comment out
+	//ModSettings_AddModTitle( "Northstar Custom" , 2 )
+	
+	// we're not adding event models for NSCN
+	/*
+	ModSettings_AddModCategory( "Event Models" )
+	ModSettings_AddEnumSetting( "ns_show_event_models", "Show Event Models", [ "#SETTING_OFF", "#SETTING_ON" ], 2 )
+	*/
+}

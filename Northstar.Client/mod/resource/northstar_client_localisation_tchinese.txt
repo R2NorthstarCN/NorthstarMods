@@ -354,6 +354,8 @@
 		"REPLACEMENT_WEAPON"             "替换的武器"
 		"WILL_RESET_ALL_SETTINGS"             "這將會重置所有屬於改條目的設置.\n\n此操作不可復原."
 		"NO_MODS"             "無可用模組! 前往 ^5588FF00northstar.thunderstore.io^0 下載更多."
+		
+		"player_force_respawn"             "強制重生"
 
 		// Toggleable progression
 		"TOGGLE_PROGRESSION"			"切換解鎖進度"

@@ -21,7 +21,6 @@ global function InviteFriendsIfAllowed
 global function SetPutPlayerInMatchmakingAfterDelay
 
 global function DLCStoreShouldBeMarkedAsNew
-global function StartNSPrivateMatch
 
 global function SetNextAutoMatchmakingPlaylist
 global function GetNextAutoMatchmakingPlaylist
@@ -67,7 +66,6 @@ struct
 	var inviteFriendsButton
 	var inviteFriendsToNetworkButton
 	var toggleMenuModeButton
-	var customButton
 
 	var networksMoreButton
 
@@ -180,8 +178,6 @@ void function InitLobbyMenu()
 	AddMenuFooterOption( menu, BUTTON_B, "#B_BUTTON_BACK", "#BACK" )
 	AddMenuFooterOption( menu, BUTTON_BACK, "#BACK_BUTTON_POSTGAME_REPORT", "#POSTGAME_REPORT", OpenPostGameMenu, IsPostGameMenuValid )
 	AddMenuFooterOption( menu, BUTTON_TRIGGER_RIGHT, "#R_TRIGGER_CHAT", "", null, IsVoiceChatPushToTalk )
-	// Client side progression toggle
-	AddMenuFooterOption( menu, BUTTON_Y, "#Y_BUTTON_TOGGLE_PROGRESSION", "#TOGGLE_PROGRESSION", ShowToggleProgressionDialog )
 
 	InitChatroom( menu )
 
@@ -230,57 +226,6 @@ void function InitLobbyMenu()
 	RegisterSignal( "LeaveParty" )
 }
 
-void function ShowToggleProgressionDialog( var button )
-{
-	bool enabled = Progression_GetPreference()
-
-	DialogData dialogData
-	dialogData.menu = GetMenu( "AnnouncementDialog" )
-	dialogData.header = enabled ? "#PROGRESSION_TOGGLE_ENABLED_HEADER" : "#PROGRESSION_TOGGLE_DISABLED_HEADER"
-	dialogData.message = enabled ? "#PROGRESSION_TOGGLE_ENABLED_BODY" : "#PROGRESSION_TOGGLE_DISABLED_BODY"
-	dialogData.image = $"ui/menu/common/dialog_announcement_1"
-
-	AddDialogButton( dialogData, "#NO" )
-	AddDialogButton( dialogData, "#YES", enabled ? DisableProgression : EnableProgression )
-
-	OpenDialog( dialogData )
-}
-
-void function EnableProgression()
-{
-	Progression_SetPreference( true )
-
-	// update the cache just in case something changed
-	UpdateCachedLoadouts_Delayed()
-
-	DialogData dialogData
-	dialogData.menu = GetMenu( "AnnouncementDialog" )
-	dialogData.header = "#PROGRESSION_ENABLED_HEADER"
-	dialogData.message = "#PROGRESSION_ENABLED_BODY"
-	dialogData.image = $"ui/menu/common/dialog_announcement_1"
-
-	AddDialogButton( dialogData, "#OK" )
-
-	EmitUISound( "UI_Menu_Item_Purchased_Stinger" )
-
-	OpenDialog( dialogData )
-}
-
-void function DisableProgression()
-{
-	Progression_SetPreference( false )
-
-	DialogData dialogData
-	dialogData.menu = GetMenu( "AnnouncementDialog" )
-	dialogData.header = "#PROGRESSION_DISABLED_HEADER"
-	dialogData.message = "#PROGRESSION_DISABLED_BODY"
-	dialogData.image = $"ui/menu/common/dialog_announcement_1"
-
-	AddDialogButton( dialogData, "#OK" )
-	
-	OpenDialog( dialogData )
-}
-
 void function SetupComboButtonTest( var menu )
 {
 	ComboStruct comboStruct = ComboButtons_Create( menu )
@@ -290,55 +235,24 @@ void function SetupComboButtonTest( var menu )
 	int buttonIndex = 0
 	file.playHeader = AddComboButtonHeader( comboStruct, headerIndex, "#MENU_HEADER_PLAY" )
 	
-	bool isModded = IsNorthstarServer()
-	
-	
-	// this will be the server browser
-	if ( isModded )
-	{
-		file.findGameButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_SERVER_BROWSER" )
-		file.lobbyButtons.append( file.findGameButton )
-		Hud_SetLocked( file.findGameButton, true )
-		Hud_AddEventHandler( file.findGameButton, UIE_CLICK, OpenServerBrowser )
-	}
-	else
-	{
-		file.findGameButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_FIND_GAME" )
-		file.lobbyButtons.append( file.findGameButton )
-		Hud_AddEventHandler( file.findGameButton, UIE_CLICK, BigPlayButton1_Activate )
-	}
+	// server browser
+	file.findGameButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_SERVER_BROWSER" )
+	file.lobbyButtons.append( file.findGameButton )
+	Hud_SetLocked( file.findGameButton, true )
+	Hud_AddEventHandler( file.findGameButton, UIE_CLICK, OpenServerBrowser )
 
-	// this is used for launching private matches now
-	if ( isModded )
-	{
-		file.inviteRoomButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_FIND_GAME" )
-		Hud_AddEventHandler( file.inviteRoomButton, UIE_CLICK, BigPlayButton1_Activate )
-	}
-	else
-	{
-		file.inviteRoomButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_INVITE_ROOM" )
-		Hud_AddEventHandler( file.inviteRoomButton, UIE_CLICK, DoRoomInviteIfAllowed )	
-	}
+	// private match
+	file.inviteRoomButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#PRIVATE_MATCH" )
+	Hud_AddEventHandler( file.inviteRoomButton, UIE_CLICK, StartPrivateMatch )
 
-	if ( isModded )
-	{
-		file.customButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "設置戰隊標籤" )
-		file.lobbyButtons.append( file.customButton )
-		Hud_AddEventHandler( file.customButton, UIE_CLICK, OnCustomClantagButton_Activate )
-	}
-	
-	
 	file.inviteFriendsButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_INVITE_FRIENDS" )
 	Hud_AddEventHandler( file.inviteFriendsButton, UIE_CLICK, InviteFriendsIfAllowed )
 
-	if ( isModded )
-	{
-		Hud_SetEnabled( file.inviteFriendsButton, false )
-		Hud_SetVisible( file.inviteFriendsButton, false )
-	}
+	Hud_SetEnabled( file.inviteFriendsButton, false )
+	Hud_SetVisible( file.inviteFriendsButton, false )
 
-	//file.toggleMenuModeButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_LOBBY_SWITCH_FD" )
-	//Hud_AddEventHandler( file.toggleMenuModeButton, UIE_CLICK, ToggleLobbyMode )
+	// file.toggleMenuModeButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_LOBBY_SWITCH_FD" )
+	// Hud_AddEventHandler( file.toggleMenuModeButton, UIE_CLICK, ToggleLobbyMode )
 
 	headerIndex++
 	buttonIndex = 0
@@ -415,8 +329,6 @@ void function SetupComboButtonTest( var menu )
 		var soundButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#VIDEO" )
 		Hud_AddEventHandler( soundButton, UIE_CLICK, AdvanceMenuEventHandler( GetMenu( "VideoMenu" ) ) )
 	#endif
-	//file.faqButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#KNB_MENU_HEADER" )
-	//Hud_AddEventHandler( file.faqButton, UIE_CLICK, AdvanceMenuEventHandler( GetMenu( "KnowledgeBaseMenu" ) ) )
 	// MOD SETTINGS
 	var modSettingsButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MOD_SETTINGS" )
 	Hud_AddEventHandler( modSettingsButton, UIE_CLICK, AdvanceMenuEventHandler( GetMenu( "ModSettings" ) ) )
@@ -432,14 +344,12 @@ bool function MatchResultsExist()
 	return true // TODO
 }
 
-void function StartNSPrivateMatch( var button )
+void function StartPrivateMatch( var button )
 {
 	if ( Hud_IsLocked( button ) )
 		return
 
 	ClientCommand( "StartPrivateMatchSearch" )
-	NSSetLoading(true)
-	NSUpdateListenServer()
 }
 
 void function DoRoomInviteIfAllowed( var button )
@@ -1107,14 +1017,7 @@ void function UpdateMatchmakingStatus()
 					string etaStr = ""
 					if ( !etaSeconds && !isConnectingToMatch )
 					{
-						if (matchmakingStatus == "#MATCHMAKING_ALLOCATING_SERVER")
-						{
-							MatchmakingSetSearchText("#MATCHMAKING_ALLOCATING_SERVER")
-						}
-						else
-						{
-							matchmakingStatus = "#MATCHMAKING_SEARCHING_FOR_MATCH"
-						}
+						matchmakingStatus = "#MATCHMAKING_SEARCHING_FOR_MATCH"
 					}
 					else
 					{

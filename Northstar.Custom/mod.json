@@ -1,7 +1,7 @@
 {
 	"Name": "Northstar.Custom",
 	"Description": "Custom content for Northstar: extra weapons, gamemodes, etc.",
-	"Version": "1.15.0",
+	"Version": "1.17.0",
 	"LoadPriority": 1,
 	"ConVars": [
 		{
@@ -27,11 +27,6 @@
 		{
 			"Name": "ns_force_melee",
 			"DefaultValue": ""
-		},
-		{
-			"Name": "ns_progression_enabled",
-				"DefaultValue": "0",
-				"Flags": "ARCHIVE_PLAYERPROFILE"
 		}
 	],
 	"Scripts": [
@@ -460,16 +455,14 @@
 			}
 		},
 		{
-			"Path": "sh_progression.nut",
-				"RunOn": "UI || SERVER || CLIENT",
-				"ServerCallback": {
-					"Before": "Progression_Init"
-				},
-				"ClientCallback": {
-					"Before": "Progression_Init"
-				},
-				"UICallback": {
-					"Before": "Progression_Init"
+			"Path": "sh_northstar_safe_io.gnut",
+			"RunOn": "CLIENT || SERVER || UI"
+		},
+		{
+			"Path": "ui/ns_custom_mod_settings.gnut",
+			"RunOn": "UI",
+			"UICallback":{
+				"Before": "NSCustomModSettings"
 			}
 		}
 	],
