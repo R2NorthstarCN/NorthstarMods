@@ -158,13 +158,12 @@
 				"After": "AiTurretSentry_Init"
 			}
 		},
-		// temporary comment out because current build don't have API yet
-		//{
-		//	"Path": "_northstar_gamestate_update.gnut",
-		//	"RunOn": "SERVER && MP",
-		//	"ServerCallback": {
-		//		"After": "Northstar_GameStateUpdate_Init"
-		//	}
-		//}
+		{
+			"Path": "_northstar_gamestate_update.gnut",
+			"RunOn": "SERVER && MP",
+			"ServerCallback": {
+				"After": "Northstar_GameStateUpdate_Init"
+			}
+		}
 	]
 }
