@@ -63,6 +63,7 @@ struct
 
 	var findGameButton
 	var inviteRoomButton
+	var customButton // for handling our custom buttons!
 	var inviteFriendsButton
 	var inviteFriendsToNetworkButton
 	var toggleMenuModeButton
