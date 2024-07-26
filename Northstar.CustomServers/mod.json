@@ -55,14 +55,13 @@
 		}
 	],
 	"Scripts": [
-		// temporary comment out because current build don't have API yet
-		//{
-		//	"Path": "sh_northstar_masterserver_messages.nut",
-		//	"RunOn": "SERVER && MP",
-		//	"ServerCallback":{
-		//		"After": "RegisterMasterserverMessageCallback"
-		//	}
-		//},
+		{
+			"Path": "sh_northstar_masterserver_messages.nut",
+			"RunOn": "SERVER && MP",
+			"ServerCallback":{
+				"After": "RegisterMasterserverMessageCallback"
+			}
+		},
 		{
 			"Path": "_custom_codecallbacks.gnut",
 			"RunOn": "SERVER"
