@@ -63,6 +63,7 @@ struct
 
 	var findGameButton
 	var inviteRoomButton
+	var customButton // for handling our custom buttons!
 	var inviteFriendsButton
 	var inviteFriendsToNetworkButton
 	var toggleMenuModeButton
@@ -244,6 +245,11 @@ void function SetupComboButtonTest( var menu )
 	// private match
 	file.inviteRoomButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#PRIVATE_MATCH" )
 	Hud_AddEventHandler( file.inviteRoomButton, UIE_CLICK, StartPrivateMatch )
+
+	// clantag
+	file.customButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_SETUP_CLANTAG" )
+	file.lobbyButtons.append( file.customButton )
+	Hud_AddEventHandler( file.customButton, UIE_CLICK, OnCustomClantagButton_Activate )
 
 	file.inviteFriendsButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_INVITE_FRIENDS" )
 	Hud_AddEventHandler( file.inviteFriendsButton, UIE_CLICK, InviteFriendsIfAllowed )

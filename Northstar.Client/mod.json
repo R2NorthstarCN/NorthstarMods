@@ -53,11 +53,10 @@
 			"Path": "_custom_codecallbacks_client.gnut",
 			"RunOn": "CLIENT"
 		},
-		// temporary comment out because current build don't have API yet
-		//{
-		//	"Path": "ui/menu_custom_clantag.nut",
-		//	"RunOn": "UI"
-		//},
+		{
+			"Path": "ui/menu_custom_clantag.nut",
+			"RunOn": "UI"
+		},
 		{
 			"Path": "client/cl_chat.gnut",
 			"RunOn": "CLIENT"
