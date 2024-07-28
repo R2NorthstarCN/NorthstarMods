@@ -995,8 +995,11 @@ string function FillInServerModsLabel( int server )
 	return ret
 }
 
-
 void function OnServerSelected( var button )
+{
+	thread OnServerSelected_Threaded( button )
+}
+void function OnServerSelected_Threaded( var button )
 {
 	if ( NSIsRequestingServerList() || NSGetServerCount() == 0 || file.serverListRequestFailed )
 		return
@@ -1004,27 +1007,57 @@ void function OnServerSelected( var button )
 	int serverIndex = file.focusedServerIndex
 
 	file.lastSelectedServer = serverIndex
+	bool shouldReload = false
+	// Count mods that have been successfully downloaded
+	bool autoDownloadAllowed = GetConVarBool( "allow_mod_auto_download" )
+	int downloadedMods = 0;
 
 	// check mods
 	for ( int i = 0; i < NSGetServerRequiredModsCount( serverIndex ); i++ )
 	{
 		if ( !NSGetModNames().contains( NSGetServerRequiredModName( serverIndex, i ) ) )
 		{
-			DialogData dialogData
-			dialogData.header = "#ERROR"
-			dialogData.message = "Missing mod \"" + NSGetServerRequiredModName( serverIndex, i ) + "\" v" + NSGetServerRequiredModVersion( serverIndex, i )
-			dialogData.image = $"ui/menu/common/dialog_error"
+			// Check if mod can be auto-downloaded
+			string modname = NSGetServerRequiredModName( serverIndex, i )
+			string modversion = NSGetServerRequiredModVersion( serverIndex, i )
+			bool modIsVerified = NSIsModDownloadable( modname, modversion )
 
-			#if PC_PROG
+			// Display an error message if not
+			if ( !modIsVerified || !autoDownloadAllowed )
+			{
+				DialogData dialogData
+				dialogData.header = "#ERROR"
+				dialogData.message = Localize( "#MISSING_MOD", modname, modversion )
+				dialogData.image = $"ui/menu/common/dialog_error"
+
+				// Specify error (only if autoDownloadAllowed is set)
+				if ( autoDownloadAllowed )
+				{
+					dialogData.message += "\n" + Localize( "#MOD_NOT_VERIFIED" )
+				}
+
 				AddDialogButton( dialogData, "#DISMISS" )
 
 				AddDialogFooter( dialogData, "#A_BUTTON_SELECT" )
-			#endif // PC_PROG
-			AddDialogFooter( dialogData, "#B_BUTTON_DISMISS_RUI" )
+				AddDialogFooter( dialogData, "#B_BUTTON_DISMISS_RUI" )
 
-			OpenDialog( dialogData )
+				OpenDialog( dialogData )
 
-			return
+				return
+			}
+
+			else // Launch download
+			{
+				if ( DownloadMod( modname, modversion ) )
+				{
+					downloadedMods++
+				}
+				else
+				{
+					DisplayModDownloadErrorDialog( modname )
+					return
+				}
+			}
 		}
 		else
 		{
@@ -1071,11 +1104,11 @@ void function OnServerSelected( var button )
 		AdvanceMenu( GetMenu( "ConnectWithPasswordMenu" ) )
 	}
 	else
-		thread ThreadedAuthAndConnectToServer()
+		thread ThreadedAuthAndConnectToServer("", downloadedMods != 0)
 }
 
 
-void function ThreadedAuthAndConnectToServer( string password = "" )
+void function ThreadedAuthAndConnectToServer( string password = "", bool modsChanged = false)
 {
 	if ( NSIsAuthenticatingWithServer() )
 		return
