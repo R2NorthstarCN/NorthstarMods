@@ -1012,58 +1012,103 @@ void function OnServerSelected_Threaded( var button )
 	bool autoDownloadAllowed = GetConVarBool( "allow_mod_auto_download" )
 	int downloadedMods = 0;
 
+	// Check out if there's any server-required mod that is not locally installed
+	array<string> modNames = NSGetModNames()
+	bool uninstalledModFound = false
+
 	// check mods
 	for ( int i = 0; i < NSGetServerRequiredModsCount( serverIndex ); i++ )
 	{
-		if ( !NSGetModNames().contains( NSGetServerRequiredModName( serverIndex, i ) ) )
+		string modname = NSGetServerRequiredModName( serverIndex, i )
+		string modversion = NSGetServerRequiredModVersion( serverIndex, i )
+		if ( modname.len() > 10 && modname.slice(0, 10) == "Northstar." )
+			continue
+		if ( !modNames.contains( modname ) )
 		{
-			// Check if mod can be auto-downloaded
-			string modname = NSGetServerRequiredModName( serverIndex, i )
-			string modversion = NSGetServerRequiredModVersion( serverIndex, i )
-			bool modIsVerified = NSIsModDownloadable( modname, modversion )
+			print( format ( "\"%s\" was not found locally, triggering manifesto fetching.", modname ) )
+			uninstalledModFound = true
+			break
+		} else if ( NSGetModVersionByModName( modname ) != modversion ) {
+			print( format ( "\"%s\" was found locally but has version \"%s\" while server requires \"%s\", triggering manifesto fetching.", requiredModInfo.name, NSGetModVersionByModName( requiredModInfo.name ), requiredModInfo.version ) )
+			uninstalledModFound = true
+			break
+		}
+	}
+	if ( uninstalledModFound && autoDownloadAllowed )
+	{
+		print("Auto-download is allowed, checking if missing mods can be installed automatically.")
+		FetchVerifiedModsManifesto()
+	}
 
-			// Display an error message if not
-			if ( !modIsVerified || !autoDownloadAllowed )
+
+	for ( int i = 0; i < NSGetServerRequiredModsCount( serverIndex ); i++ )
+	{
+		string modname = NSGetServerRequiredModName( serverIndex, i )
+		string modversion = NSGetServerRequiredModVersion( serverIndex, i )
+		// Tolerate core mods having different versions
+		if ( modname.len() > 10 && modname.slice(0, 10) == "Northstar." )
+			continue
+
+		if ( !NSGetModNames().contains( modname ) || NSGetModVersionByModName( modname ) != modversion )
+		{
+			// Auto-download mod
+			if ( autoDownloadAllowed )
+			{
+				bool modIsVerified = NSIsModDownloadable( modname, modversion )
+
+				// Display error message if mod is not verified
+				if ( !modIsVerified )
+				{
+					DialogData dialogData
+					dialogData.header = "#ERROR"
+					dialogData.message = Localize( "#MISSING_MOD", modname, modversion )
+					dialogData.message += "\n" + Localize( "#MOD_NOT_VERIFIED" )
+					dialogData.image = $"ui/menu/common/dialog_error"
+
+					AddDialogButton( dialogData, "#DISMISS" )
+					AddDialogFooter( dialogData, "#A_BUTTON_SELECT" )
+					AddDialogFooter( dialogData, "#B_BUTTON_DISMISS_RUI" )
+
+					OpenDialog( dialogData )
+					return
+				}
+				else
+				{
+					if ( DownloadMod( mod, modversion ) )
+					{
+						downloadedMods++
+					}
+					else
+					{
+						DisplayModDownloadErrorDialog( modname )
+						return
+					}
+				}
+			}
+
+			// Mod not found, display error message
+			else
 			{
 				DialogData dialogData
 				dialogData.header = "#ERROR"
 				dialogData.message = Localize( "#MISSING_MOD", modname, modversion )
 				dialogData.image = $"ui/menu/common/dialog_error"
 
-				// Specify error (only if autoDownloadAllowed is set)
-				if ( autoDownloadAllowed )
-				{
-					dialogData.message += "\n" + Localize( "#MOD_NOT_VERIFIED" )
-				}
-
 				AddDialogButton( dialogData, "#DISMISS" )
-
 				AddDialogFooter( dialogData, "#A_BUTTON_SELECT" )
 				AddDialogFooter( dialogData, "#B_BUTTON_DISMISS_RUI" )
 
 				OpenDialog( dialogData )
-
 				return
 			}
 
-			else // Launch download
-			{
-				if ( DownloadMod( modname, modversion ) )
-				{
-					downloadedMods++
-				}
-				else
-				{
-					DisplayModDownloadErrorDialog( modname )
-					return
-				}
-			}
+
 		}
 		else
 		{
 			// this uses semver https://semver.org
-			array<string> serverModVersion = split( NSGetServerRequiredModVersion( serverIndex, i ), "." )
-			array<string> clientModVersion = split( NSGetModVersionByModName( NSGetServerRequiredModName( serverIndex, i ) ), "." )
+			array<string> serverModVersion = split( modname, "." )
+			array<string> clientModVersion = split( NSGetModVersionByModName( modname ), "." )
 
 			bool semverFail = false
 			// if server has invalid semver don't bother checking

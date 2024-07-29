@@ -1,9 +1,11 @@
 global function DownloadMod
 global function DisplayModDownloadErrorDialog
+global function FetchVerifiedModsManifesto
 
 global enum eModInstallStatus
 {
 	IDLE,
+    MANIFESTO_FETCHING,
     DOWNLOADING,
     CHECKSUMING,
     EXTRACTING,
@@ -18,6 +20,36 @@ global enum eModInstallStatus
 }
 
 const int MB = 1024*1000;
+
+
+void function FetchVerifiedModsManifesto()
+{
+	print("Start fetching verified mods manifesto from the Internet")
+
+	// Fetching UI
+	DialogData dialogData
+	dialogData.header = Localize( "#MANIFESTO_FETCHING_TITLE" )
+	dialogData.message = Localize( "#MANIFESTO_FETCHING_TEXT" )
+	dialogData.showSpinner = true;
+
+	// Prevent user from closing dialog
+	dialogData.forceChoice = true;
+	OpenDialog( dialogData )
+
+	// Do the actual fetching
+	NSFetchVerifiedModsManifesto()
+
+	ModInstallState state = NSGetModInstallState()
+	while ( state.status == eModInstallStatus.MANIFESTO_FETCHING )
+	{
+		state = NSGetModInstallState()
+		WaitFrame()
+	}
+
+	// Close dialog when manifesto has been received
+	CloseActiveMenu()
+}
+
 
 bool function DownloadMod( string modname, string modversion )
 {
@@ -61,8 +93,11 @@ void function UpdateModDownloadDialog( string modname, string modversion, ModIns
 	switch ( state.status )
 	{
 	case eModInstallStatus.IDLE:
-		Hud_SetText( header, Localize( "#DOWNLOADING_MOD_TITLE_W_PROGRESS",  "Requesting..."  ) )
-		Hud_SetText( body, Localize( "#DOWNLOADING_MOD_TEXT_W_PROGRESS", modname, modversion, 0, 0 ) )
+		Hud_SetText( header, Localize( "#MANIFESTO_FETCHING_TITLE") )
+		Hud_SetText( body, Localize( "#MANIFESTO_FETCHING_TEXT" ) )
+	case eModInstallStatus.MANIFESTO_FETCHING:
+		Hud_SetText( header, Localize( "#MANIFESTO_FETCHING_TITLE" ) )
+		Hud_SetText( body, Localize( "#MANIFESTO_FETCHING_TEXT" ) )
 		break
 	case eModInstallStatus.DOWNLOADING:
 		Hud_SetText( header, Localize( "#DOWNLOADING_MOD_TITLE_W_PROGRESS", string( state.ratio ) ) )
