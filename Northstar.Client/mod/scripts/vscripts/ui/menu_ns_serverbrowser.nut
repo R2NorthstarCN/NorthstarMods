@@ -1029,7 +1029,7 @@ void function OnServerSelected_Threaded( var button )
 			uninstalledModFound = true
 			break
 		} else if ( NSGetModVersionByModName( modname ) != modversion ) {
-			print( format ( "\"%s\" was found locally but has version \"%s\" while server requires \"%s\", triggering manifesto fetching.", requiredModInfo.name, NSGetModVersionByModName( requiredModInfo.name ), requiredModInfo.version ) )
+			print( format ( "\"%s\" was found locally but has version \"%s\" while server requires \"%s\", triggering manifesto fetching.", modname, NSGetModVersionByModName( modname ), modversion ) )
 			uninstalledModFound = true
 			break
 		}
@@ -1074,7 +1074,7 @@ void function OnServerSelected_Threaded( var button )
 				}
 				else
 				{
-					if ( DownloadMod( mod, modversion ) )
+					if ( DownloadMod( modname, modversion ) )
 					{
 						downloadedMods++
 					}
