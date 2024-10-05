@@ -446,7 +446,7 @@
 		},
 		{
 			"Path":  "sh_northstar_matchmaker.gnut",
-			"RunOn": "CLIENT || SERVER",
+			"RunOn":  "( CLIENT || SERVER ) && MP",
 			"ClientCallback": {
 				"Before": "Sh_Northstar_MatchMaker_Init"
 			},
