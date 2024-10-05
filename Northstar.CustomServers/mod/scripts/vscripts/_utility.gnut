@@ -3722,8 +3722,8 @@ void function ScaleHealth( entity ent, float scale )
 	int maxHealth = ent.GetMaxHealth()
 	float healthRatio = float( ent.GetHealth() ) / maxHealth
 	maxHealth = int( maxHealth * scale )
-	ent.SetHealth( maxHealth * healthRatio )
 	ent.SetMaxHealth( maxHealth )
+	ent.SetHealth( maxHealth * healthRatio )
 }
 
 void function TeleportPlayerToEnt( entity player, entity org )
