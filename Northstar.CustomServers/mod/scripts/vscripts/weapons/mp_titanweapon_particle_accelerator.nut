@@ -116,9 +116,32 @@ void function OnWeaponActivate_titanweapon_particle_accelerator( entity weapon )
 	if( weapon.IsWeaponInAds() != weapon.s.lastZoomState )
 	{
 		if( weapon.IsWeaponInAds() )
+		{
+			#if SERVER
 			OnWeaponStartZoomIn_titanweapon_particle_accelerator( weapon )
+			#endif
+
+			// client special fx fixes
+			#if CLIENT
+			entity weaponOwner = weapon.GetWeaponOwner()
+			if ( weaponOwner == GetLocalViewPlayer() )
+				EmitSoundOnEntity( weaponOwner, "Weapon_Particle_Accelerator_WindUp_1P" )
+			weapon.PlayWeaponEffectNoCull( TPA_ADS_EFFECT_1P, TPA_ADS_EFFECT_3P, "muzzle_flash" )
+			weapon.EmitWeaponSound( "arc_cannon_charged_loop" )
+			#endif
+		}
 		else
+		{
+			#if SERVER
 			OnWeaponStartZoomOut_titanweapon_particle_accelerator( weapon )
+			#endif
+
+			// client special fx fixes
+			#if CLIENT
+			weapon.StopWeaponEffect( TPA_ADS_EFFECT_1P, TPA_ADS_EFFECT_3P )
+			weapon.StopWeaponSound( "arc_cannon_charged_loop" )
+			#endif
+		}
 	}
 
 	#if SERVER
