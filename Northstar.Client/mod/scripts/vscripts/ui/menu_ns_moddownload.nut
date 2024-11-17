@@ -4,7 +4,6 @@ global function FetchVerifiedModsManifesto
 
 global enum eModInstallStatus
 {
-	IDLE,
     MANIFESTO_FETCHING,
     DOWNLOADING,
     CHECKSUMING,
@@ -50,14 +49,12 @@ void function FetchVerifiedModsManifesto()
 	CloseActiveMenu()
 }
 
-
-bool function DownloadMod( string modname, string modversion )
+bool function DownloadMod( RequiredModInfo mod )
 {
-	
 	// Downloading mod UI
 	DialogData dialogData
 	dialogData.header = Localize( "#DOWNLOADING_MOD_TITLE" )
-	dialogData.message = Localize( "#DOWNLOADING_MOD_TEXT", modname, modversion )
+	dialogData.message = Localize( "#DOWNLOADING_MOD_TEXT", mod.name, mod.version )
 	dialogData.showSpinner = true;
 
 	// Prevent user from closing dialog
@@ -70,13 +67,13 @@ bool function DownloadMod( string modname, string modversion )
 	var body = GetSingleElementByClassname( menu, "DialogMessageClass" )
 
 	// Start actual mod downloading
+	NSDownloadMod( mod.name, mod.version )
+
 	ModInstallState state = NSGetModInstallState()
-	state.status = eModInstallStatus.IDLE
-	NSDownloadMod( modname, modversion )
 	while ( state.status < eModInstallStatus.DONE )
 	{
 		state = NSGetModInstallState()
-		UpdateModDownloadDialog( modname, modversion, state, menu, header, body )
+		UpdateModDownloadDialog( mod, state, menu, header, body )
 		WaitFrame()
 	}
 
@@ -88,28 +85,25 @@ bool function DownloadMod( string modname, string modversion )
 	return state.status == eModInstallStatus.DONE
 }
 
-void function UpdateModDownloadDialog( string modname, string modversion, ModInstallState state, var menu, var header, var body )
+void function UpdateModDownloadDialog( RequiredModInfo mod, ModInstallState state, var menu, var header, var body )
 {
 	switch ( state.status )
 	{
-	case eModInstallStatus.IDLE:
-		Hud_SetText( header, Localize( "#MANIFESTO_FETCHING_TITLE") )
-		Hud_SetText( body, Localize( "#MANIFESTO_FETCHING_TEXT" ) )
 	case eModInstallStatus.MANIFESTO_FETCHING:
 		Hud_SetText( header, Localize( "#MANIFESTO_FETCHING_TITLE" ) )
 		Hud_SetText( body, Localize( "#MANIFESTO_FETCHING_TEXT" ) )
 		break
 	case eModInstallStatus.DOWNLOADING:
 		Hud_SetText( header, Localize( "#DOWNLOADING_MOD_TITLE_W_PROGRESS", string( state.ratio ) ) )
-		Hud_SetText( body, Localize( "#DOWNLOADING_MOD_TEXT_W_PROGRESS", modname, modversion, floor( state.progress / MB ), floor( state.total / MB ) ) )
+		Hud_SetText( body, Localize( "#DOWNLOADING_MOD_TEXT_W_PROGRESS", mod.name, mod.version, floor( state.progress / MB ), floor( state.total / MB ) ) )
 		break
 	case eModInstallStatus.CHECKSUMING:
 		Hud_SetText( header, Localize( "#CHECKSUMING_TITLE" ) )
-		Hud_SetText( body, Localize( "#CHECKSUMING_TEXT", modname, modversion ) )
+		Hud_SetText( body, Localize( "#CHECKSUMING_TEXT", mod.name, mod.version ) )
 		break
 	case eModInstallStatus.EXTRACTING:
 		Hud_SetText( header, Localize( "#EXTRACTING_MOD_TITLE", string( state.ratio ) ) )
-		Hud_SetText( body, Localize( "#EXTRACTING_MOD_TEXT", modname, modversion, floor( state.progress / MB ), floor( state.total / MB ) ) )
+		Hud_SetText( body, Localize( "#EXTRACTING_MOD_TEXT", mod.name, mod.version, floor( state.progress / MB ), floor( state.total / MB ) ) )
 		break
 	default:
 		break
