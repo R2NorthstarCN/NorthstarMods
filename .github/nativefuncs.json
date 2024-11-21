@@ -19,6 +19,12 @@
 			"argTypes":"string modName, bool enabled"
 		},
 		{
+			"name":"NSIsModRemote",
+			"helpText":"",
+			"returnTypeString":"bool",
+			"argTypes":"string modName"
+		},
+		{
 			"name":"NSGetModDescriptionByModName",
 			"helpText":"",
 			"returnTypeString":"string",
@@ -217,6 +223,12 @@
 			"helpText":"",
 			"returnTypeString":"void",
 			"argTypes":"string modName, bool enabled"
+		},
+		{
+			"name":"NSIsModRemote",
+			"helpText":"",
+			"returnTypeString":"bool",
+			"argTypes":"string modName"
 		},
 		{
 			"name":"NSGetModDescriptionByModName",
@@ -419,6 +431,12 @@
 			"argTypes":"string modName, bool enabled"
 		},
 		{
+			"name":"NSIsModRemote",
+			"helpText":"",
+			"returnTypeString":"bool",
+			"argTypes":"string modName"
+		},
+		{
 			"name":"NSGetModDescriptionByModName",
 			"helpText":"",
 			"returnTypeString":"string",
@@ -473,6 +491,12 @@
 			"helpText": "downloads a given mod from distant API to local game profile",
 			"returnTypeString": "void",
 			"argTypes": "string name, string version"
+		},
+		{
+			"name": "NSCancelModDownload",
+			"helpText": "prevents installation of the mod currently being installed",
+			"returnTypeString": "void",
+			"argTypes": ""
 		},
 		{
 			"name": "NSGetModInstallState",
