@@ -217,7 +217,12 @@ void function Stats_OnPlayerDidDamage( entity victim, var damageInfo )
 	{
 		entity soul = attacker.GetTitanSoul()
 		if ( IsValid( soul ) && IsPetTitan( attacker ) ) // northstar missing: soul validation before using IsPetTitan()
-			attacker = GetPetTitanOwner( attacker )
+		{
+			entity owner = GetPetTitanOwner( attacker )
+			// defensive fix: no idea why sometimes cant get a owner from pet titan...
+			if( IsValid( owner ) )
+				attacker = owner
+		}
 	}
 
 	if ( !attacker.IsPlayer() )
